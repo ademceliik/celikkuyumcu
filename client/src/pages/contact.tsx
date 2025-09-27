@@ -22,8 +22,10 @@ export default function Contact() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted with data:', formData);
     
     if (!formData.name || !formData.phone || !formData.message) {
+      console.log('Form validation failed - missing fields');
       toast({
         title: "Hata",
         description: "Lütfen tüm alanları doldurun.",
@@ -33,7 +35,9 @@ export default function Contact() {
     }
 
     const whatsappMessage = `Merhaba! Ben ${formData.name}.\nTelefon: ${formData.phone}\nMesaj: ${formData.message}`;
-    window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
+    const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(whatsappMessage)}`;
+    console.log('Opening WhatsApp URL for form submission:', whatsappUrl);
+    window.open(whatsappUrl, '_blank');
     
     toast({
       title: "Başarılı",
@@ -44,11 +48,23 @@ export default function Contact() {
   };
 
   const handleWhatsAppClick = () => {
-    window.open(`https://wa.me/${WHATSAPP_PHONE}?text=Merhaba, ürünleriniz hakkında bilgi almak istiyorum.`, '_blank');
+    console.log('WhatsApp button clicked');
+    const url = `https://wa.me/${WHATSAPP_PHONE}?text=Merhaba, ürünleriniz hakkında bilgi almak istiyorum.`;
+    console.log('Opening WhatsApp URL:', url);
+    window.open(url, '_blank');
   };
 
   const handlePhoneClick = () => {
-    window.open(`tel:${PHONE_NUMBER}`, '_self');
+    console.log('Phone button clicked');
+    const phoneUrl = `tel:${PHONE_NUMBER}`;
+    console.log('Opening phone URL:', phoneUrl);
+    try {
+      window.location.href = phoneUrl;
+    } catch (error) {
+      console.error('Phone call failed:', error);
+      // Fallback: copy phone number to clipboard or show alert
+      alert(`Telefon numarası: ${PHONE_NUMBER}`);
+    }
   };
 
   return (
