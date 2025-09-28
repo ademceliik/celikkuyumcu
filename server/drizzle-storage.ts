@@ -37,11 +37,11 @@ import type { IStorage } from "./storage";
 
 export const drizzleStorage: IStorage = {
   // Homepage Info CRUD
-  getHomepageInfo: async function () {
+  getHomepageInfo: async () => {
     const [info] = await db.select().from(homepageInfo);
     return info;
   },
-  updateHomepageInfo: async function (data) {
+  updateHomepageInfo: async (data) => {
     const [info] = await db.select().from(homepageInfo);
     if (info) {
       const [updated] = await db.update(homepageInfo).set(data).where(eq(homepageInfo.id, info.id)).returning();
@@ -53,11 +53,11 @@ export const drizzleStorage: IStorage = {
   },
 
   // About Info CRUD
-  getAboutInfo: async function () {
+  getAboutInfo: async () => {
     const [info] = await db.select().from(aboutInfo);
     return info;
   },
-  updateAboutInfo: async function (data) {
+  updateAboutInfo: async (data) => {
     const [info] = await db.select().from(aboutInfo);
     if (info) {
       const [updated] = await db.update(aboutInfo).set(data).where(eq(aboutInfo.id, info.id)).returning();
