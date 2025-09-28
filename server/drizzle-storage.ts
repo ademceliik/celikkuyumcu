@@ -1,36 +1,5 @@
 import { db } from "./db";
 import { products, users, contactInfo, exchangeRate, messages, homepageInfo, aboutInfo } from "@shared/schema";
-  // Homepage Info CRUD
-  async getHomepageInfo() {
-    const [info] = await db.select().from(homepageInfo);
-    return info;
-  },
-  async updateHomepageInfo(data) {
-    const [info] = await db.select().from(homepageInfo);
-    if (info) {
-      const [updated] = await db.update(homepageInfo).set(data).where(eq(homepageInfo.id, info.id)).returning();
-      return updated;
-    } else {
-      const [created] = await db.insert(homepageInfo).values({ ...data, id: randomUUID() }).returning();
-      return created;
-    }
-  },
-
-  // About Info CRUD
-  async getAboutInfo() {
-    const [info] = await db.select().from(aboutInfo);
-    return info;
-  },
-  async updateAboutInfo(data) {
-    const [info] = await db.select().from(aboutInfo);
-    if (info) {
-      const [updated] = await db.update(aboutInfo).set(data).where(eq(aboutInfo.id, info.id)).returning();
-      return updated;
-    } else {
-      const [created] = await db.insert(aboutInfo).values({ ...data, id: randomUUID() }).returning();
-      return created;
-    }
-  },
 import { eq } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import type { IStorage } from "./storage";
