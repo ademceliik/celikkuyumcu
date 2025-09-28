@@ -20,9 +20,7 @@ export default function Header() {
     { href: "/products", label: "Ürünler" },
     { href: "/about", label: "Hakkımızda" },
     { href: "/contact", label: "İletişim" },
-    { href: "/admin-panel", label: (
-      <span className="flex items-center">Mesajlar<MessageBadge /></span>
-    ) },
+    { href: "/admin-panel", label: <span className="flex items-center">Mesajlar<MessageBadge /></span>, labelKey: "mesajlar" },
   ];
 
   return (
@@ -35,20 +33,30 @@ export default function Header() {
           </Link>
           
           <nav className="hidden md:flex space-x-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`transition-colors font-medium ${
-                  isActive(item.href)
-                    ? "text-primary"
-                    : "text-foreground hover:text-primary"
-                }`}
-                data-testid={`link-${typeof item.label === "string" ? item.label.toLowerCase().replace(' ', '-') : "mesajlar"}`}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              // Use labelKey if present, otherwise generate from string label
+              const testId = `link-${
+                item.labelKey
+                  ? item.labelKey
+                  : typeof item.label === "string"
+                  ? item.label.toLowerCase().replace(/\s+/g, "-")
+                  : "unknown"
+              }`;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`transition-colors font-medium ${
+                    isActive(item.href)
+                      ? "text-primary"
+                      : "text-foreground hover:text-primary"
+                  }`}
+                  data-testid={testId}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
           
           <div className="flex items-center space-x-4">
@@ -69,20 +77,29 @@ export default function Header() {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                 <nav className="flex flex-col space-y-4 mt-8">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={`text-lg transition-colors ${
-                        isActive(item.href)
-                          ? "text-primary font-semibold"
-                          : "text-foreground hover:text-primary"
-                      }`}
-                      data-testid={`mobile-link-${item.label.toLowerCase().replace(' ', '-')}`}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
+                  {navItems.map((item) => {
+                    const testId = `mobile-link-${
+                      item.labelKey
+                        ? item.labelKey
+                        : typeof item.label === "string"
+                        ? item.label.toLowerCase().replace(/\s+/g, "-")
+                        : "unknown"
+                    }`;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`text-lg transition-colors ${
+                          isActive(item.href)
+                            ? "text-primary font-semibold"
+                            : "text-foreground hover:text-primary"
+                        }`}
+                        data-testid={testId}
+                      >
+                        {item.label}
+                      </Link>
+                    );
+                  })}
                 </nav>
               </SheetContent>
             </Sheet>
