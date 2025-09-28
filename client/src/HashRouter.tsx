@@ -1,7 +1,12 @@
 import { Router } from "wouter";
 import { useState, useEffect } from "react";
 
-function HashRouter({ children }: { children: React.ReactNode }) {
+interface HashRouterProps {
+  children: React.ReactNode;
+}
+
+export default function HashRouter({ children }: HashRouterProps) {
+  // Mevcut location
   const [location, setLocation] = useState(() => window.location.hash.slice(1) || "/");
 
   useEffect(() => {
@@ -10,15 +15,13 @@ function HashRouter({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
-  const navigate = (to: string) => {
-    window.location.hash = to;
-  };
+  // Wouter hook: [getLocation, navigate]
+  const hook: [() => string, (to: string) => void] = [
+    () => location,
+    (to: string) => {
+      if (to !== location) window.location.hash = to;
+    },
+  ];
 
-  return (
-    <Router hook={[() => location, navigate]}>
-      {children}
-    </Router>
-  );
+  return <Router hook={hook}>{children}</Router>;
 }
-
-export default HashRouter;
