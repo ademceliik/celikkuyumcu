@@ -41,21 +41,19 @@ export const getQueryFn: <T>(options: {
     return await res.json();
   };
 
-  export const queryClient = new QueryClient({
+// TanStack Query v5 uyumlu QueryClient konfigürasyonu
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: async ({ queryKey }) => {
-        const res = await fetch(queryKey.join("/") as string, { credentials: "include" });
-        if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`);
-        return res.json();
-      },
       refetchInterval: false,
       refetchOnWindowFocus: false,
       staleTime: Infinity,
       retry: false,
+      networkMode: 'online',
     },
     mutations: {
       retry: false,
+      networkMode: 'online',
     },
   },
 });
