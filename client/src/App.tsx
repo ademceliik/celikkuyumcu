@@ -21,7 +21,7 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
       <Route path="/admin" component={Admin} />
-      <Route path="/admin-panel" component={AdminPanel} />
+      <Route path="/adminpanel" component={AdminPanel} />
       <Route component={NotFound} />
     </Switch>
   );

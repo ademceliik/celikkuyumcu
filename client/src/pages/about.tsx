@@ -6,7 +6,7 @@ export default function About() {
   const { data: aboutInfo } = useQuery({
     queryKey: ["/api/about-info"],
     queryFn: async () => {
-      const res = await fetch("/api/about-info");
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/about-info`);
       return res.json();
     },
   });

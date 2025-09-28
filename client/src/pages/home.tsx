@@ -15,7 +15,7 @@ export default function Home() {
   const { data: homepageInfo } = useQuery({
     queryKey: ["/api/homepage-info"],
     queryFn: async () => {
-      const res = await fetch("/api/homepage-info");
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/homepage-info`);
       return res.json();
     },
   });

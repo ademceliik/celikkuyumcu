@@ -1,8 +1,11 @@
 {
-  "out": "./migrations",
+  "out": "./drizzle",
   "schema": "../shared/schema.ts",
   "dialect": "postgresql",
   "dbCredentials": {
     "url": "${DATABASE_URL}"
+  },
+  "migrations": {
+    "prefix": "sql"
   }
 }

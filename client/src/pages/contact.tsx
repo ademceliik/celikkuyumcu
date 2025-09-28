@@ -20,7 +20,7 @@ export default function Contact() {
   const { data: contactInfo } = useQuery({
     queryKey: ["/api/contact-info"],
     queryFn: async () => {
-      const res = await fetch("/api/contact-info");
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/contact-info`);
       return res.json();
     },
   });

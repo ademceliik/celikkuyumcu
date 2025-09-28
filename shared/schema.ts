@@ -1,3 +1,8 @@
+import { sql } from "drizzle-orm";
+import { pgTable, text, varchar, decimal, integer } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
+
 // Homepage Info Table
 export const homepageInfo = pgTable("homepage_info", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -24,12 +29,6 @@ export const insertAboutInfoSchema = createInsertSchema(aboutInfo).omit({ id: tr
 export type InsertAboutInfo = z.infer<typeof insertAboutInfoSchema>;
 export type AboutInfo = typeof aboutInfo.$inferSelect;
 
-// Extend Contact Info Table
-import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, decimal, integer } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod";
-
 export const products = pgTable("products", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
@@ -52,11 +51,13 @@ export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  role: text("role").notNull().default("admin"),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
+  role: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

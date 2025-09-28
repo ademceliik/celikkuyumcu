@@ -1,55 +1,122 @@
-# Çelik Kuyumcu Web Projesi - Deploy ve Kurulum Rehberi
+# Çelik Kuyumcu Web Sitesi
 
-## Gereksinimler
-- Node.js (LTS sürümü)
-- npm veya yarn
+Modern kuyumcu web sitesi - React frontend + Express backend + PostgreSQL veritabanı
 
-## Proje Kurulumu
+## Proje Yapısı
 
-1. **Depoyu klonlayın:**
-   ```sh
-   git clone <repo-url>
-   cd CelikKuyumcu
-   ```
+Bu proje 3 ana bölümden oluşur:
 
-2. **Sunucu (Backend) bağımlılıklarını yükleyin:**
-   ```sh
-   cd server
-   npm install
-   ```
+### 🎨 Frontend (`client/`)
+- React 18 + TypeScript
+- TanStack Query (React Query) v5
+- Tailwind CSS + Radix UI
+- Responsive tasarım
+- Admin paneli
 
-3. **İstemci (Frontend) bağımlılıklarını yükleyin:**
-   ```sh
-   cd ../client
-   npm install
-   ```
+### ⚙️ Backend (`server/`)
+- Express.js + TypeScript
+- Drizzle ORM
+- PostgreSQL
+- Session yönetimi
+- CORS ayarları
 
-4. **Geliştirme ortamında çalıştırma:**
-   - Sunucu başlat:
-     ```sh
-     cd ../server
-     npm run dev
-     ```
-   - İstemci başlat:
-     ```sh
-     cd ../client
-     npm run dev
-     ```
+### 🗄️ Veritabanı
+- PostgreSQL
+- Ürün yönetimi
+- İletişim mesajları
+- Admin kullanıcıları
 
-5. **Canlıya Alma (Deploy):**
-   - Vercel, Netlify veya kendi sunucunuza deploy edebilirsiniz.
-   - `client` klasörünü Vercel/Netlify'ya yükleyin (build komutu: `npm run build`, output: `dist`)
-   - `server` klasörünü bir Node.js sunucusunda çalıştırın veya uygun bir cloud servise yükleyin.
+## 🚀 Render'da Deploy
 
-## Admin Paneli
-- `/admin` veya `/admin-panel` adresinden giriş yapabilirsiniz.
-- Varsayılan giriş: kullanıcı adı `admin`, şifre `admin` (güvenlik için canlıda değiştirin!)
+### 1. Backend (Web Service)
+```bash
+# Root Directory: server
+# Build Command: npm run build
+# Start Command: npm start
+```
 
-## Notlar
-- Tüm kodlar TypeScript ve modern React ile yazılmıştır.
-- API endpointleri `/api` ile başlar.
-- Veritabanı olarak şimdilik memory (geçici) kullanılmaktadır, canlıya alırken gerçek bir veritabanı entegre edebilirsiniz.
+**Environment Variables:**
+- `DATABASE_URL`: PostgreSQL URL'i
+- `FRONTEND_URL`: Frontend URL'i
+- `NODE_ENV`: production
 
----
+### 2. Frontend (Static Site)
+```bash
+# Build Command: npm run build
+# Publish Directory: dist
+```
 
-Herhangi bir sorunda veya canlıya alma aşamasında destek için iletişime geçebilirsiniz.
+**Environment Variables:**
+- `VITE_API_URL`: Backend URL'i
+
+### 3. PostgreSQL
+- Render PostgreSQL servisi kullanın
+- Backend'e `DATABASE_URL` olarak bağlayın
+
+## 📁 Proje Yapısı
+
+```
+├── client/              # Frontend
+│   ├── src/
+│   │   ├── pages/       # Sayfalar
+│   │   ├── components/  # Bileşenler
+│   │   └── lib/         # Utilities
+│   ├── package.json
+│   └── vite.config.ts
+├── server/              # Backend
+│   ├── index.ts         # Ana server dosyası
+│   ├── routes.ts        # API rotaları
+│   ├── db.ts           # Veritabanı bağlantısı
+│   ├── package.json
+│   └── tsconfig.json
+├── shared/              # Paylaşılan kodlar
+│   └── schema.ts        # Veritabanı şeması
+└── README.md
+```
+
+## 🔧 Geliştirme
+
+### Backend
+```bash
+cd server
+npm install
+npm run dev
+```
+
+### Frontend
+```bash
+cd client
+npm install
+npm run dev
+```
+
+## 📱 Özellikler
+
+- ✅ Responsive tasarım
+- ✅ Ürün kataloğu
+- ✅ İletişim formu
+- ✅ WhatsApp entegrasyonu
+- ✅ Admin paneli (/adminpanel)
+- ✅ Ürün yönetimi
+- ✅ Mesaj yönetimi
+- ✅ Modern UI/UX
+
+## 🔐 Admin Panel
+
+Admin paneline `/adminpanel` rotasından erişilebilir. Normal kullanıcılar bu sayfayı göremez.
+
+## 🌐 API Endpoints
+
+- `GET /api/products` - Ürünleri listele
+- `POST /api/products` - Yeni ürün ekle
+- `PUT /api/products/:id` - Ürün güncelle
+- `DELETE /api/products/:id` - Ürün sil
+- `GET /api/contact-info` - İletişim bilgileri
+- `GET /api/about-info` - Hakkımızda bilgileri
+- `GET /api/homepage-info` - Anasayfa bilgileri
+- `GET /api/messages` - Mesajları listele
+- `POST /api/messages` - Yeni mesaj gönder
+
+## 📞 İletişim
+
+Proje hakkında sorularınız için iletişime geçebilirsiniz.

@@ -91,13 +91,74 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
   // Admin login
-  app.post("/api/users/login", async (req: any, res: any) => {
-    const { username, password } = req.body;
-    const user = await storage.getUserByUsername(username);
-    if (user && user.password === password) {
-      return res.json({ success: true });
+  app.post("/api/admin/login", async (req: any, res: any) => {
+    try {
+      const { username, password } = req.body;
+      
+      if (!username || !password) {
+        return res.status(400).json({ message: "Kullanıcı adı ve şifre gerekli" });
+      }
+      
+      const user = await storage.getUserByUsername(username);
+      if (user && user.password === password) {
+        // Session oluştur
+        req.session.userId = user.id;
+        req.session.username = user.username;
+        req.session.role = user.role;
+        
+        return res.json({ 
+          success: true, 
+          user: { 
+            id: user.id, 
+            username: user.username, 
+            role: user.role 
+          } 
+        });
+      }
+      
+      return res.status(401).json({ message: "Kullanıcı adı veya şifre hatalı" });
+    } catch (error) {
+      console.error("Login error:", error);
+      return res.status(500).json({ message: "Sunucu hatası" });
     }
-    return res.status(401).json({ message: "Kullanıcı adı veya şifre hatalı" });
+  });
+
+  // Admin logout
+  app.post("/api/admin/logout", async (req: any, res: any) => {
+    try {
+      req.session.destroy((err: any) => {
+        if (err) {
+          return res.status(500).json({ message: "Çıkış yapılamadı" });
+        }
+        res.json({ success: true });
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      return res.status(500).json({ message: "Sunucu hatası" });
+    }
+  });
+
+  // Check admin session
+  app.get("/api/admin/me", async (req: any, res: any) => {
+    try {
+      if (req.session.userId) {
+        const user = await storage.getUserByUsername(req.session.username);
+        if (user) {
+          return res.json({ 
+            success: true, 
+            user: { 
+              id: user.id, 
+              username: user.username, 
+              role: user.role 
+            } 
+          });
+        }
+      }
+      return res.status(401).json({ message: "Oturum bulunamadı" });
+    } catch (error) {
+      console.error("Session check error:", error);
+      return res.status(500).json({ message: "Sunucu hatası" });
+    }
   });
   
   // Get all products

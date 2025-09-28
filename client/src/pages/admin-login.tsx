@@ -9,9 +9,10 @@ const AdminLogin: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
     e.preventDefault();
     setError("");
     try {
-      const res = await fetch((import.meta.env.VITE_API_URL || "") + "/users/login", {
+      const res = await fetch((import.meta.env.VITE_API_URL || "") + "/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ username, password })
       });
       if (res.ok) {

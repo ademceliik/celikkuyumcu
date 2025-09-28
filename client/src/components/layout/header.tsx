@@ -20,7 +20,6 @@ export default function Header() {
     { href: "/products", label: "Ürünler" },
     { href: "/about", label: "Hakkımızda" },
     { href: "/contact", label: "İletişim" },
-    { href: "/admin-panel", label: <span className="flex items-center">Mesajlar<MessageBadge /></span>, labelKey: "mesajlar" },
   ];
 
   return (
