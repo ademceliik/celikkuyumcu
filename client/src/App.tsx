@@ -11,6 +11,7 @@ import Contact from "@/pages/contact";
 import Admin from "@/pages/admin";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
+import AdminPanel from "@/pages/admin-panel";
 
 function Router() {
   return (
