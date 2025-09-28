@@ -6,7 +6,6 @@ interface HashRouterProps {
 }
 
 export default function HashRouter({ children }: HashRouterProps) {
-  // Mevcut location
   const [location, setLocation] = useState(() => window.location.hash.slice(1) || "/");
 
   useEffect(() => {
@@ -15,10 +14,9 @@ export default function HashRouter({ children }: HashRouterProps) {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
-  // Wouter hook: [getLocation, navigate]
   const hook: [() => string, (to: string) => void] = [
     () => location,
-    (to: string) => {
+    (to) => {
       if (to !== location) window.location.hash = to;
     },
   ];

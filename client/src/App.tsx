@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Route } from "wouter";
 import HashRouter from "./HashRouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -17,7 +17,6 @@ import AdminPanel from "@/pages/admin-panel";
 function Router() {
   return (
     <HashRouter>
-      <Switch>
         <Route path="/" component={Home} />
         <Route path="/products" component={Products} />
         <Route path="/about" component={About} />
@@ -25,7 +24,6 @@ function Router() {
         <Route path="/admin" component={Admin} />
         <Route path="/adminpanel" component={AdminPanel} />
         <Route component={NotFound} />
-      </Switch>
     </HashRouter>
   );
 }
