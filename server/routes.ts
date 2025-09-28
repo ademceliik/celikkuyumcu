@@ -1,3 +1,4 @@
+export async function registerRoutes(app: Express): Promise<Server> {
   // Admin login
   app.post("/api/users/login", async (req, res) => {
     const { username, password } = req.body;
