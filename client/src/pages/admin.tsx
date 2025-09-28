@@ -12,8 +12,10 @@ import { type Product } from "@shared/schema";
 import { JEWELRY_CATEGORIES, GOLD_KARATS } from "@/lib/constants";
 import ProductForm from "@/components/admin/product-form";
 import { Trash2, Edit, Plus, Search } from "lucide-react";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function Admin() {
+  useDocumentTitle("Çelik Kuyumcu | Admin");
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");

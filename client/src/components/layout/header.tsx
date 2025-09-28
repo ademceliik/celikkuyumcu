@@ -1,8 +1,10 @@
 import { Link, useLocation } from "wouter";
+import MessageBadge from "@/components/admin/message-badge";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { WHATSAPP_PHONE } from "@/lib/constants";
+import whatsappIcon from "@/assets/whatsapp.svg";
 
 export default function Header() {
   const [location] = useLocation();
@@ -18,6 +20,9 @@ export default function Header() {
     { href: "/products", label: "Ürünler" },
     { href: "/about", label: "Hakkımızda" },
     { href: "/contact", label: "İletişim" },
+    { href: "/admin-panel", label: (
+      <span className="flex items-center">Mesajlar<MessageBadge /></span>
+    ) },
   ];
 
   return (
@@ -39,7 +44,7 @@ export default function Header() {
                     ? "text-primary"
                     : "text-foreground hover:text-primary"
                 }`}
-                data-testid={`link-${item.label.toLowerCase().replace(' ', '-')}`}
+                data-testid={`link-${typeof item.label === "string" ? item.label.toLowerCase().replace(' ', '-') : "mesajlar"}`}
               >
                 {item.label}
               </Link>
@@ -52,7 +57,7 @@ export default function Header() {
               className="bg-green-500 text-white hover:bg-green-600 transition-colors flex items-center"
               data-testid="button-whatsapp"
             >
-              <i className="fab fa-whatsapp mr-2"></i>
+              <img src={whatsappIcon} alt="WhatsApp" className="w-5 h-5 mr-2" />
               WhatsApp
             </Button>
             

@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -178,15 +179,56 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
         <FormField
           control={form.control}
           name="imageUrl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Resim URL</FormLabel>
-              <FormControl>
-                <Input placeholder="https://example.com/image.jpg" {...field} data-testid="input-product-image" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          render={({ field }) => {
+            const fileInputRef = useRef<HTMLInputElement>(null);
+            const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              try {
+                const pubKey = import.meta.env.VITE_UPLOADCARE_PUBLIC_KEY;
+                if (!pubKey) throw new Error("Uploadcare public key bulunamadı");
+                const formData = new FormData();
+                formData.append("UPLOADCARE_PUB_KEY", pubKey);
+                formData.append("UPLOADCARE_STORE", "1");
+                formData.append("file", file);
+                const res = await fetch("https://upload.uploadcare.com/base/", {
+                  method: "POST",
+                  body: formData,
+                });
+                const data = await res.json();
+                if (data.file) {
+                  const url = `https://ucarecdn.com/${data.file}/`;
+                  field.onChange(url);
+                }
+              } catch (err) {
+                alert("Görsel yüklenemedi. Lütfen tekrar deneyin.");
+              }
+            };
+            return (
+              <FormItem>
+                <FormLabel>Resim</FormLabel>
+                <FormControl>
+                  <div className="flex flex-col gap-2">
+                    <Input
+                      placeholder="https://example.com/image.jpg"
+                      {...field}
+                      data-testid="input-product-image"
+                    />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                    />
+                    {field.value && (
+                      <img src={field.value} alt="Ürün görseli" className="w-24 h-16 object-cover rounded border" />
+                    )}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
 
         <div className="grid grid-cols-2 gap-4">

@@ -1,10 +1,90 @@
 import { db } from "./db";
-import { products, users, contactInfo, exchangeRate } from "@shared/schema";
+import { products, users, contactInfo, exchangeRate, messages, homepageInfo, aboutInfo } from "@shared/schema";
+  // Homepage Info CRUD
+  async getHomepageInfo() {
+    const [info] = await db.select().from(homepageInfo);
+    return info;
+  },
+  async updateHomepageInfo(data) {
+    const [info] = await db.select().from(homepageInfo);
+    if (info) {
+      const [updated] = await db.update(homepageInfo).set(data).where(eq(homepageInfo.id, info.id)).returning();
+      return updated;
+    } else {
+      const [created] = await db.insert(homepageInfo).values({ ...data, id: randomUUID() }).returning();
+      return created;
+    }
+  },
+
+  // About Info CRUD
+  async getAboutInfo() {
+    const [info] = await db.select().from(aboutInfo);
+    return info;
+  },
+  async updateAboutInfo(data) {
+    const [info] = await db.select().from(aboutInfo);
+    if (info) {
+      const [updated] = await db.update(aboutInfo).set(data).where(eq(aboutInfo.id, info.id)).returning();
+      return updated;
+    } else {
+      const [created] = await db.insert(aboutInfo).values({ ...data, id: randomUUID() }).returning();
+      return created;
+    }
+  },
 import { eq } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import type { IStorage } from "./storage";
 
 export const drizzleStorage: IStorage = {
+  // Homepage Info CRUD
+  getHomepageInfo: async function () {
+    const [info] = await db.select().from(homepageInfo);
+    return info;
+  },
+  updateHomepageInfo: async function (data) {
+    const [info] = await db.select().from(homepageInfo);
+    if (info) {
+      const [updated] = await db.update(homepageInfo).set(data).where(eq(homepageInfo.id, info.id)).returning();
+      return updated;
+    } else {
+      const [created] = await db.insert(homepageInfo).values({ ...data, id: randomUUID() }).returning();
+      return created;
+    }
+  },
+
+  // About Info CRUD
+  getAboutInfo: async function () {
+    const [info] = await db.select().from(aboutInfo);
+    return info;
+  },
+  updateAboutInfo: async function (data) {
+    const [info] = await db.select().from(aboutInfo);
+    if (info) {
+      const [updated] = await db.update(aboutInfo).set(data).where(eq(aboutInfo.id, info.id)).returning();
+      return updated;
+    } else {
+      const [created] = await db.insert(aboutInfo).values({ ...data, id: randomUUID() }).returning();
+      return created;
+    }
+  },
+  async updateMessageReadStatus(id, isRead) {
+    const [updated] = await db.update(messages).set({ isRead }).where(eq(messages.id, id)).returning();
+    return updated;
+  },
+
+  async deleteMessage(id) {
+    const [deleted] = await db.delete(messages).where(eq(messages.id, id)).returning();
+    return !!deleted;
+  },
+  async createMessage(message) {
+    const [created] = await db.insert(messages).values({ ...message, id: randomUUID() }).returning();
+    return created;
+  },
+
+  async getMessages() {
+    // En yeni mesajlar en üstte olacak şekilde sırala
+    return db.select().from(messages).orderBy(messages.createdAt.desc());
+  },
   async getUser(id) {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;

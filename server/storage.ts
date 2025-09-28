@@ -1,7 +1,32 @@
-import { type User, type InsertUser, type Product, type InsertProduct, type ContactInfo, type ExchangeRate } from "@shared/schema";
+  updateMessageReadStatus(id: string, isRead: string): Promise<Message | undefined>;
+  deleteMessage(id: string): Promise<boolean>;
+  async updateMessageReadStatus(id: string, isRead: string): Promise<Message | undefined> {
+    const msg = this.messages.get(id);
+    if (!msg) return undefined;
+    msg.isRead = isRead;
+    this.messages.set(id, msg);
+    return msg;
+  }
+
+  async deleteMessage(id: string): Promise<boolean> {
+    return this.messages.delete(id);
+  }
+import { type User, type InsertUser, type Product, type InsertProduct, type ContactInfo, type ExchangeRate, type Message, type InsertMessage, type HomepageInfo, type InsertHomepageInfo, type AboutInfo, type InsertAboutInfo } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
+  // Homepage Info
+  getHomepageInfo(): Promise<HomepageInfo | undefined>;
+  updateHomepageInfo(data: Partial<InsertHomepageInfo>): Promise<HomepageInfo>;
+
+  // About Info
+  getAboutInfo(): Promise<AboutInfo | undefined>;
+  updateAboutInfo(data: Partial<InsertAboutInfo>): Promise<AboutInfo>;
+  // Messages
+  createMessage(message: InsertMessage): Promise<Message>;
+  getMessages(): Promise<Message[]>;
+  updateMessageReadStatus(id: string, isRead: string): Promise<Message | undefined>;
+  deleteMessage(id: string): Promise<boolean>;
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
@@ -23,6 +48,32 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
+  private homepageInfo: HomepageInfo | undefined;
+  private aboutInfo: AboutInfo | undefined;
+  private messages: Map<string, Message> = new Map();
+  async updateMessageReadStatus(id: string, isRead: string): Promise<Message | undefined> {
+    const msg = this.messages.get(id);
+    if (!msg) return undefined;
+    msg.isRead = isRead;
+    this.messages.set(id, msg);
+    return msg;
+  }
+
+  async deleteMessage(id: string): Promise<boolean> {
+    return this.messages.delete(id);
+  }
+  async createMessage(insertMessage: InsertMessage): Promise<Message> {
+    const id = randomUUID();
+    const createdAt = new Date().toISOString();
+    const message: Message = { ...insertMessage, id, createdAt };
+    this.messages.set(id, message);
+    return message;
+  }
+
+  async getMessages(): Promise<Message[]> {
+    // Yeni gelen en üstte olacak şekilde sırala
+    return Array.from(this.messages.values()).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
   private users: Map<string, User>;
   private products: Map<string, Product>;
 
@@ -35,6 +86,45 @@ export class MemStorage implements IStorage {
     this.exchangeRates = new Map();
     // Varsayılan iletişim ve kur bilgisi
     this.contactInfo = { id: randomUUID(), phone: "+90 555 555 55 55" };
+    this.homepageInfo = {
+      id: randomUUID(),
+      title: "Altının Büyüsünü Keşfedin",
+      description: "Çelik Kuyumcu ile en kaliteli altın ve mücevherat ürünlerini keşfedin.",
+      imageUrl: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+    };
+    this.aboutInfo = {
+      id: randomUUID(),
+      title: "Hakkımızda",
+      description: "1998 yılından bu yana altın ve mücevherat sektöründe hizmet veren Çelik Kuyumcu, müşteri memnuniyetini en üst seviyede tutmaya odaklanıyor.",
+      experienceYears: 25,
+      customerCount: 1000,
+      imageUrl: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+    };
+  // Homepage Info
+  async getHomepageInfo(): Promise<HomepageInfo | undefined> {
+    return this.homepageInfo;
+  }
+  async updateHomepageInfo(data: Partial<InsertHomepageInfo>): Promise<HomepageInfo> {
+    if (!this.homepageInfo) {
+      this.homepageInfo = { id: randomUUID(), ...data } as HomepageInfo;
+    } else {
+      this.homepageInfo = { ...this.homepageInfo, ...data };
+    }
+    return this.homepageInfo;
+  }
+
+  // About Info
+  async getAboutInfo(): Promise<AboutInfo | undefined> {
+    return this.aboutInfo;
+  }
+  async updateAboutInfo(data: Partial<InsertAboutInfo>): Promise<AboutInfo> {
+    if (!this.aboutInfo) {
+      this.aboutInfo = { id: randomUUID(), ...data } as AboutInfo;
+    } else {
+      this.aboutInfo = { ...this.aboutInfo, ...data };
+    }
+    return this.aboutInfo;
+  }
     this.initializeProducts();
     this.initializeExchangeRates();
   }

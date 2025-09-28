@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -7,6 +8,7 @@ import { type Product } from "@shared/schema";
 import { JEWELRY_CATEGORIES } from "@/lib/constants";
 
 export default function Products() {
+  useDocumentTitle("Çelik Kuyumcu | Ürünler");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   
   const { data: products = [], isLoading } = useQuery<Product[]>({

@@ -67,7 +67,7 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-secondary-foreground/20 mt-8 pt-8 text-center text-secondary-foreground/70">
-          <p>&copy; 2024 Çelik Kuyumcu. Tüm hakları saklıdır.</p>
+          <p>&copy; 2025 Çelik Kuyumcu. Tüm hakları saklıdır.</p>
         </div>
       </div>
     </footer>
