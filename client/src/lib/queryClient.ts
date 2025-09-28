@@ -44,14 +44,22 @@ export const getQueryFn: <T>(options: {
   export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: async () => {
-        throw new Error("No default queryFn defined");
+      queryFn: async ({ queryKey }) => {
+        const res = await fetch(queryKey.join("/") as string, { credentials: "include" });
+        if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`);
+        return res.json();
       },
+      refetchInterval: false,
       refetchOnWindowFocus: false,
+      staleTime: Infinity,
+      retry: false,
+    },
+    mutations: {
       retry: false,
     },
   },
 });
+
 /* export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
