@@ -5,13 +5,22 @@ const AdminLogin: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Demo: admin / admin
-    if (username === "admin" && password === "admin") {
-      onLogin();
-    } else {
-      setError("Kullanıcı adı veya şifre hatalı");
+    setError("");
+    try {
+      const res = await fetch((import.meta.env.VITE_API_URL || "") + "/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+      if (res.ok) {
+        onLogin();
+      } else {
+        setError("Kullanıcı adı veya şifre hatalı");
+      }
+    } catch {
+      setError("Sunucuya bağlanılamadı");
     }
   };
 

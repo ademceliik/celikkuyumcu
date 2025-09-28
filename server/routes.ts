@@ -1,7 +1,18 @@
+  // Admin login
+  app.post("/api/users/login", async (req, res) => {
+    const { username, password } = req.body;
+    const user = await storage.getUserByUsername(username);
+    if (user && user.password === password) {
+      return res.json({ success: true });
+    }
+    return res.status(401).json({ message: "Kullanıcı adı veya şifre hatalı" });
+  });
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { insertProductSchema } from "@shared/schema";
+// Varsayılan olarak memory storage kullanılır. Gerçek veritabanı için aşağıdaki satırı aktif edin:
+// import { storage } from "./storage";
+import { drizzleStorage as storage } from "./drizzle-storage";
+import { insertProductSchema, insertContactInfoSchema, insertExchangeRateSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -89,6 +100,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Ürün başarıyla silindi" });
     } catch (error) {
       console.error("Error deleting product:", error);
+      res.status(500).json({ message: "İç sunucu hatası" });
+    }
+  });
+
+  // Get contact info
+  app.get("/api/contact-info", async (req, res) => {
+    try {
+      const info = await storage.getContactInfo();
+      res.json(info);
+    } catch (error) {
+      res.status(500).json({ message: "İç sunucu hatası" });
+    }
+  });
+
+  // Update contact info
+  app.put("/api/contact-info", async (req, res) => {
+    try {
+      const validated = insertContactInfoSchema.partial().parse(req.body);
+      if (!validated.phone) return res.status(400).json({ message: "Telefon zorunlu" });
+      const info = await storage.updateContactInfo(validated.phone);
+      res.json(info);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Geçersiz veri", errors: error.errors });
+      }
+      res.status(500).json({ message: "İç sunucu hatası" });
+    }
+  });
+
+  // Get exchange rates
+  app.get("/api/exchange-rates", async (req, res) => {
+    try {
+      const rates = await storage.getExchangeRates();
+      res.json(rates);
+    } catch (error) {
+      res.status(500).json({ message: "İç sunucu hatası" });
+    }
+  });
+
+  // Update exchange rate
+  app.put("/api/exchange-rates", async (req, res) => {
+    try {
+      const validated = insertExchangeRateSchema.partial().parse(req.body);
+      if (!validated.currency || !validated.rate) return res.status(400).json({ message: "Para birimi ve kur zorunlu" });
+      const rate = await storage.updateExchangeRate(validated.currency, validated.rate);
+      res.json(rate);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Geçersiz veri", errors: error.errors });
+      }
       res.status(500).json({ message: "İç sunucu hatası" });
     }
   });

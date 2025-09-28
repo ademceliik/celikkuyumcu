@@ -34,3 +34,28 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+// Contact Info Table
+export const contactInfo = pgTable("contact_info", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  phone: text("phone").notNull(),
+});
+
+export const insertContactInfoSchema = createInsertSchema(contactInfo).omit({
+  id: true,
+});
+export type InsertContactInfo = z.infer<typeof insertContactInfoSchema>;
+export type ContactInfo = typeof contactInfo.$inferSelect;
+
+// Exchange Rate Table
+export const exchangeRate = pgTable("exchange_rate", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  currency: text("currency").notNull(), // örn: USD, EUR, GRAM ALTIN
+  rate: decimal("rate", { precision: 10, scale: 4 }).notNull(),
+});
+
+export const insertExchangeRateSchema = createInsertSchema(exchangeRate).omit({
+  id: true,
+});
+export type InsertExchangeRate = z.infer<typeof insertExchangeRateSchema>;
+export type ExchangeRate = typeof exchangeRate.$inferSelect;

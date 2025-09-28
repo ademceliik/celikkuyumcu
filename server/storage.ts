@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Product, type InsertProduct } from "@shared/schema";
+import { type User, type InsertUser, type Product, type InsertProduct, type ContactInfo, type ExchangeRate } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -12,18 +12,42 @@ export interface IStorage {
   createProduct(product: InsertProduct): Promise<Product>;
   updateProduct(id: string, product: Partial<InsertProduct>): Promise<Product | undefined>;
   deleteProduct(id: string): Promise<boolean>;
+
+  // Contact Info
+  getContactInfo(): Promise<ContactInfo | undefined>;
+  updateContactInfo(phone: string): Promise<ContactInfo>;
+
+  // Exchange Rate
+  getExchangeRates(): Promise<ExchangeRate[]>;
+  updateExchangeRate(currency: string, rate: string): Promise<ExchangeRate>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private products: Map<string, Product>;
 
+  private contactInfo: ContactInfo | undefined;
+  private exchangeRates: Map<string, ExchangeRate>;
+
   constructor() {
     this.users = new Map();
     this.products = new Map();
-    
-    // Initialize with some sample products
+    this.exchangeRates = new Map();
+    // Varsayılan iletişim ve kur bilgisi
+    this.contactInfo = { id: randomUUID(), phone: "+90 555 555 55 55" };
     this.initializeProducts();
+    this.initializeExchangeRates();
+  }
+
+  private async initializeExchangeRates() {
+    const rates: [string, string][] = [
+      ["USD", "28.50"],
+      ["EUR", "31.00"],
+      ["GRAM ALTIN", "1700.00"]
+    ];
+    for (const [currency, rate] of rates) {
+      await this.updateExchangeRate(currency, rate);
+    }
   }
 
   private async initializeProducts() {
@@ -143,6 +167,34 @@ export class MemStorage implements IStorage {
 
   async deleteProduct(id: string): Promise<boolean> {
     return this.products.delete(id);
+  }
+
+  // Contact Info
+  async getContactInfo(): Promise<ContactInfo | undefined> {
+    return this.contactInfo;
+  }
+  async updateContactInfo(phone: string): Promise<ContactInfo> {
+    if (!this.contactInfo) {
+      this.contactInfo = { id: randomUUID(), phone };
+    } else {
+      this.contactInfo.phone = phone;
+    }
+    return this.contactInfo;
+  }
+
+  // Exchange Rate
+  async getExchangeRates(): Promise<ExchangeRate[]> {
+    return Array.from(this.exchangeRates.values());
+  }
+  async updateExchangeRate(currency: string, rate: string): Promise<ExchangeRate> {
+    let ex = Array.from(this.exchangeRates.values()).find(e => e.currency === currency);
+    if (!ex) {
+      ex = { id: randomUUID(), currency, rate };
+    } else {
+      ex.rate = rate;
+    }
+    this.exchangeRates.set(currency, ex);
+    return ex;
   }
 }
 
