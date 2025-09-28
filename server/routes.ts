@@ -1,6 +1,12 @@
-export async function registerRoutes(app: Express): Promise<Server> {
+import { createServer } from "http";
+import type { Express } from "express";
+import { drizzleStorage as storage } from "./drizzle-storage";
+import { insertProductSchema, insertContactInfoSchema, insertExchangeRateSchema } from "@shared/schema";
+import { z } from "zod";
+
+export async function registerRoutes(app: Express): Promise<ReturnType<typeof createServer>> {
   // Admin login
-  app.post("/api/users/login", async (req, res) => {
+  app.post("/api/users/login", async (req: any, res: any) => {
     const { username, password } = req.body;
     const user = await storage.getUserByUsername(username);
     if (user && user.password === password) {
@@ -8,18 +14,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     return res.status(401).json({ message: "Kullanıcı adı veya şifre hatalı" });
   });
-import type { Express } from "express";
-import { createServer, type Server } from "http";
-// Varsayılan olarak memory storage kullanılır. Gerçek veritabanı için aşağıdaki satırı aktif edin:
-// import { storage } from "./storage";
-import { drizzleStorage as storage } from "./drizzle-storage";
-import { insertProductSchema, insertContactInfoSchema, insertExchangeRateSchema } from "@shared/schema";
-import { z } from "zod";
-
-export async function registerRoutes(app: Express): Promise<Server> {
   
   // Get all products
-  app.get("/api/products", async (req, res) => {
+  app.get("/api/products", async (req: any, res: any) => {
     try {
       const products = await storage.getProducts();
       res.json(products);
@@ -30,7 +27,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get products by category
-  app.get("/api/products/category/:category", async (req, res) => {
+  app.get("/api/products/category/:category", async (req: any, res: any) => {
     try {
       const { category } = req.params;
       const products = await storage.getProductsByCategory(category);
@@ -42,7 +39,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get single product
-  app.get("/api/products/:id", async (req, res) => {
+  app.get("/api/products/:id", async (req: any, res: any) => {
     try {
       const { id } = req.params;
       const product = await storage.getProduct(id);
@@ -57,7 +54,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create product
-  app.post("/api/products", async (req, res) => {
+  app.post("/api/products", async (req: any, res: any) => {
     try {
       const validatedData = insertProductSchema.parse(req.body);
       const product = await storage.createProduct(validatedData);
@@ -72,7 +69,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update product
-  app.patch("/api/products/:id", async (req, res) => {
+  app.patch("/api/products/:id", async (req: any, res: any) => {
     try {
       const { id } = req.params;
       const validatedData = insertProductSchema.partial().parse(req.body);
@@ -91,7 +88,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete product
-  app.delete("/api/products/:id", async (req, res) => {
+  app.delete("/api/products/:id", async (req: any, res: any) => {
     try {
       const { id } = req.params;
       const deleted = await storage.deleteProduct(id);
@@ -106,7 +103,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get contact info
-  app.get("/api/contact-info", async (req, res) => {
+  app.get("/api/contact-info", async (req: any, res: any) => {
     try {
       const info = await storage.getContactInfo();
       res.json(info);
@@ -116,7 +113,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update contact info
-  app.put("/api/contact-info", async (req, res) => {
+  app.put("/api/contact-info", async (req: any, res: any) => {
     try {
       const validated = insertContactInfoSchema.partial().parse(req.body);
       if (!validated.phone) return res.status(400).json({ message: "Telefon zorunlu" });
@@ -131,7 +128,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get exchange rates
-  app.get("/api/exchange-rates", async (req, res) => {
+  app.get("/api/exchange-rates", async (req: any, res: any) => {
     try {
       const rates = await storage.getExchangeRates();
       res.json(rates);
@@ -141,7 +138,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update exchange rate
-  app.put("/api/exchange-rates", async (req, res) => {
+  app.put("/api/exchange-rates", async (req: any, res: any) => {
     try {
       const validated = insertExchangeRateSchema.partial().parse(req.body);
       if (!validated.currency || !validated.rate) return res.status(400).json({ message: "Para birimi ve kur zorunlu" });
