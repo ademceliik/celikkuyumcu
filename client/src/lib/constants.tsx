@@ -9,12 +9,12 @@ export const JEWELRY_CATEGORIES = {
 
 export const GOLD_KARATS = [14, 18, 22] as const;
 
-export const WHATSAPP_PHONE = "905551234567";
-export const PHONE_NUMBER = "+90 555 123 45 67";
+export const WHATSAPP_PHONE = "905443405854";
+export const PHONE_NUMBER = "+90 544 340 58 54";
 
 export const CONTACT_INFO = {
-  address: "Merkez Mahallesi, Altın Sokak No: 15\n34000 İstanbul, Türkiye",
+  address: "Kuyumcular Çarşısı, Pınarbaşı Mah. 1236. Sk. No1/T\nŞanlıurfa",
   phone: PHONE_NUMBER,
   email: "info@celikkuyumcu.com",
-  workingHours: "Pazartesi - Cumartesi: 09:00 - 19:00\nPazar: 13:00 - 18:00"
+  workingHours: "Pazartesi - Cuma: 09:00 - 18:00\nCumartesi: 09:00 - 16:00"
 };
