@@ -27,9 +27,15 @@ export default defineConfig({
     },
   },
   root: path.resolve(import.meta.dirname, "client"),
+  optimizeDeps: {
+    include: ["@tanstack/react-query"], // <-- Bunu ekledik
+  },
   build: {
     outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
+    commonjsOptions: {
+      include: [/node_modules/], // <-- Bunu ekledik
+    },
   },
   server: {
     fs: {
