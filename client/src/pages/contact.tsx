@@ -17,9 +17,12 @@ export default function Contact() {
     phone: "",
     message: ""
   });
-  const { data: contactInfo } = useQuery(["/api/contact-info"], async () => {
-    const res = await fetch("/api/contact-info");
-    return res.json();
+  const { data: contactInfo } = useQuery({
+    queryKey: ["/api/contact-info"],
+    queryFn: async () => {
+      const res = await fetch("/api/contact-info");
+      return res.json();
+    },
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

@@ -3,9 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 
 export default function About() {
   useDocumentTitle("Çelik Kuyumcu | Hakkımızda");
-  const { data: aboutInfo } = useQuery(["/api/about-info"], async () => {
-    const res = await fetch("/api/about-info");
-    return res.json();
+  const { data: aboutInfo } = useQuery({
+    queryKey: ["/api/about-info"],
+    queryFn: async () => {
+      const res = await fetch("/api/about-info");
+      return res.json();
+    },
   });
   return (
     <section className="py-20 bg-muted min-h-screen">

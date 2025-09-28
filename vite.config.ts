@@ -28,13 +28,18 @@ export default defineConfig({
   },
   root: path.resolve(import.meta.dirname, "client"),
   optimizeDeps: {
-    include: ["@tanstack/react-query"], // <-- Bunu ekledik
+    include: ["@tanstack/react-query", "@tanstack/react-query-devtools"],
+    exclude: [],
   },
   build: {
     outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
-    commonjsOptions: {
-      include: [/node_modules/], // <-- Bunu ekledik
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-query': ['@tanstack/react-query'],
+        },
+      },
     },
   },
   server: {

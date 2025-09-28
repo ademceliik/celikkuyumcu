@@ -1,7 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, CheckCircle, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function MessageAdmin() {
   const { data: messages = [], isLoading } = useQuery<any[]>({
@@ -16,7 +17,7 @@ export default function MessageAdmin() {
         body: JSON.stringify({ isRead: "true" }),
       });
     },
-    onSuccess: () => queryClient.invalidateQueries(["/api/messages"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/messages"] }),
   });
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -24,7 +25,7 @@ export default function MessageAdmin() {
         method: "DELETE",
       });
     },
-    onSuccess: () => queryClient.invalidateQueries(["/api/messages"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/messages"] }),
   });
 
   return (

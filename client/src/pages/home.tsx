@@ -12,9 +12,12 @@ export default function Home() {
   const { data: products = [], isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
-  const { data: homepageInfo } = useQuery(["/api/homepage-info"], async () => {
-    const res = await fetch("/api/homepage-info");
-    return res.json();
+  const { data: homepageInfo } = useQuery({
+    queryKey: ["/api/homepage-info"],
+    queryFn: async () => {
+      const res = await fetch("/api/homepage-info");
+      return res.json();
+    },
   });
 
   const featuredProducts = products.slice(0, 3);

@@ -5,12 +5,15 @@ import { Input } from "@/components/ui/input";
 
 export default function HomepageAdmin() {
   const queryClient = useQueryClient();
-  const { data, isLoading } = useQuery(["/api/homepage-info"], async () => {
-    const res = await fetch("/api/homepage-info");
-    return res.json();
+  const { data, isLoading } = useQuery({
+    queryKey: ["/api/homepage-info"],
+    queryFn: async () => {
+      const res = await fetch("/api/homepage-info");
+      return res.json();
+    },
   });
-  const mutation = useMutation(
-    async (values: any) => {
+  const mutation = useMutation({
+    mutationFn: async (values: any) => {
       const res = await fetch("/api/homepage-info", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -18,10 +21,8 @@ export default function HomepageAdmin() {
       });
       return res.json();
     },
-    {
-      onSuccess: () => queryClient.invalidateQueries(["/api/homepage-info"]),
-    }
-  );
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/homepage-info"] }),
+  });
 
   const [form, setForm] = React.useState({
     title: "",

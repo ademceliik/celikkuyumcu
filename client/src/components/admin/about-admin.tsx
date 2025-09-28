@@ -5,12 +5,15 @@ import { Input } from "@/components/ui/input";
 
 export default function AboutAdmin() {
   const queryClient = useQueryClient();
-  const { data, isLoading } = useQuery(["/api/about-info"], async () => {
-    const res = await fetch("/api/about-info");
-    return res.json();
+  const { data, isLoading } = useQuery({
+    queryKey: ["/api/about-info"],
+    queryFn: async () => {
+      const res = await fetch("/api/about-info");
+      return res.json();
+    },
   });
-  const mutation = useMutation(
-    async (values: any) => {
+  const mutation = useMutation({
+    mutationFn: async (values: any) => {
       const res = await fetch("/api/about-info", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -18,10 +21,8 @@ export default function AboutAdmin() {
       });
       return res.json();
     },
-    {
-      onSuccess: () => queryClient.invalidateQueries(["/api/about-info"]),
-    }
-  );
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/about-info"] }),
+  });
 
   const [form, setForm] = React.useState({
     title: "",
