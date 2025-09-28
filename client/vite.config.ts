@@ -1,18 +1,14 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import path from "path";
-
 export default defineConfig({
   plugins: [react()],
+  base: "/", // <<< burayı ekle
   resolve: {
     alias: {
-      "@": path.resolve(import.meta.dirname, "src"),
-      "@shared": path.resolve(import.meta.dirname, "../shared"),
+      "@": path.resolve(import.meta.url, "src"), // import.meta.dirname yok, vite 3+ versiyonunda import.meta.url ile path.resolve kullan
+      "@shared": path.resolve(import.meta.url, "../shared"),
     },
   },
   optimizeDeps: {
     include: ["@tanstack/react-query", "@tanstack/react-query-devtools"],
-    exclude: [],
   },
   build: {
     outDir: "dist",
