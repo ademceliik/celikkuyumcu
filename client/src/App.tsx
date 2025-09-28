@@ -20,6 +20,7 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
       <Route path="/admin" component={Admin} />
+      <Route path="/admin-panel" element={<AdminPanel />} />
       <Route component={NotFound} />
     </Switch>
   );
