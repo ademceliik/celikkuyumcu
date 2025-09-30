@@ -50,40 +50,6 @@ app.use(
   }),
 );
 
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, unknown> | undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson: unknown, ...args: unknown[]) {
-    capturedJsonResponse = bodyJson as Record<string, unknown> | undefined;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        try {
-          logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-        } catch (error) {
-          console.error("response log stringify error", error);
-        }
-      }
-
-      if (logLine.length > 120) {
-        logLine = `${logLine.slice(0, 119)}...`;
-      }
-
-      console.log(logLine);
-    }
-  });
-
-  next();
-});
-
 (async () => {
   try {
     await initializeDatabase();
