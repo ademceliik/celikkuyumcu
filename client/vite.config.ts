@@ -1,22 +1,31 @@
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 export default defineConfig({
   plugins: [react()],
-  base: "/", // <<< burayı ekle
+  base: "/",
   resolve: {
     alias: {
-      "@": path.resolve(import.meta.url, "src"), // import.meta.dirname yok, vite 3+ versiyonunda import.meta.url ile path.resolve kullan
-      "@shared": path.resolve(import.meta.url, "../shared"),
+      "@": path.resolve(__dirname, "src"),
+      "@shared": path.resolve(__dirname, "..", "shared"),
+      "@assets": path.resolve(__dirname, "..", "attached_assets"),
     },
   },
   optimizeDeps: {
     include: ["@tanstack/react-query", "@tanstack/react-query-devtools"],
   },
   build: {
-    outDir: "dist",
+    outDir: path.resolve(__dirname, "dist"),
     emptyOutDir: true,
     rollupOptions: {
       output: {
         manualChunks: {
-          'react-query': ['@tanstack/react-query'],
+          "react-query": ["@tanstack/react-query"],
         },
       },
     },
@@ -24,8 +33,8 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:5000',
+      "/api": {
+        target: process.env.VITE_API_URL || "http://localhost:5000",
         changeOrigin: true,
       },
     },

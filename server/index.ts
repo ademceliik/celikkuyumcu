@@ -64,17 +64,17 @@ app.use((req, res, next) => {
   res.on("finish", () => {
     const duration = Date.now() - start;
     if (path.startsWith("/api")) {
-      let logLine = ${req.method}   in ms;
+      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
         try {
-          logLine +=  :: ;
+          logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
         } catch (error) {
           console.error("response log stringify error", error);
         }
       }
 
       if (logLine.length > 120) {
-        logLine = ${logLine.slice(0, 119)}...;
+        logLine = `${logLine.slice(0, 119)}...`;
       }
 
       console.log(logLine);
@@ -104,7 +104,7 @@ app.use((req, res, next) => {
         reusePort: true,
       },
       () => {
-        console.log(Backend API running on port );
+        console.log(`Backend API running on port ${port}`);
       },
     );
   } catch (error) {
