@@ -3,22 +3,8 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-export default defineConfig({
-  plugins: [
-    react(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer(),
-          ),
-          await import("@replit/vite-plugin-dev-banner").then((m) =>
-            m.devBanner(),
-          ),
-        ]
-      : []),
-  ],
+export default defineConfig(() => ({
+  plugins: [react(), runtimeErrorOverlay()],
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),
@@ -29,7 +15,6 @@ export default defineConfig({
   root: path.resolve(import.meta.dirname, "client"),
   optimizeDeps: {
     include: ["@tanstack/react-query", "@tanstack/react-query-devtools"],
-    exclude: [],
   },
   build: {
     outDir: path.resolve(import.meta.dirname, "dist"),
@@ -37,7 +22,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          'react-query': ['@tanstack/react-query'],
+          "react-query": ["@tanstack/react-query"],
         },
       },
     },
@@ -48,4 +33,4 @@ export default defineConfig({
       deny: ["**/.*"],
     },
   },
-});
+}));

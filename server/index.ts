@@ -1,4 +1,4 @@
-import express from "express";
+import express, { type Request, type Response, type NextFunction } from "express";
 import session from "express-session";
 import { registerRoutes } from "./routes";
 import { initializeDatabase } from "./db";
@@ -56,8 +56,8 @@ app.use((req, res, next) => {
   let capturedJsonResponse: Record<string, unknown> | undefined;
 
   const originalResJson = res.json;
-  res.json = function (bodyJson: any, ...args: any[]) {
-    capturedJsonResponse = bodyJson;
+  res.json = function (bodyJson: unknown, ...args: unknown[]) {
+    capturedJsonResponse = bodyJson as Record<string, unknown> | undefined;
     return originalResJson.apply(res, [bodyJson, ...args]);
   };
 
@@ -73,8 +73,8 @@ app.use((req, res, next) => {
         }
       }
 
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "...";
+      if (logLine.length > 120) {
+        logLine = ${logLine.slice(0, 119)}...;
       }
 
       console.log(logLine);
@@ -89,7 +89,7 @@ app.use((req, res, next) => {
     await initializeDatabase();
     const server = await registerRoutes(app);
 
-    app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
       const status = err.status || err.statusCode || 500;
       const message = err.message || "Internal Server Error";
       res.status(status).json({ message });
