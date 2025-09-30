@@ -5,20 +5,33 @@ import { initializeDatabase } from "./db";
 
 const app = express();
 
-app.use((req, res, next) => {
-  const allowedOrigins = [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "https://celik-kuyumcu-frontend.onrender.com",
-    process.env.FRONTEND_URL || "http://localhost:3000",
-  ];
+const normalizeOrigin = (value?: string | null): string | undefined => {
+  if (!value) return undefined;
+  return value.trim().replace(/\/$/, "");
+};
 
+const baseAllowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://celik-kuyumcu-frontend.onrender.com",
+  "https://celikkuyumcu.onrender.com",
+  process.env.FRONTEND_URL,
+];
+
+const allowedOriginSet = new Set(
+  baseAllowedOrigins
+    .map((origin) => normalizeOrigin(origin))
+    .filter((origin): origin is string => Boolean(origin)),
+);
+
+app.use((req, res, next) => {
   const origin = req.headers.origin as string | undefined;
+  const normalizedOrigin = normalizeOrigin(origin);
 
   if (process.env.NODE_ENV === "development") {
     res.setHeader("Access-Control-Allow-Origin", origin || "*");
-  } else if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
+  } else if (normalizedOrigin && allowedOriginSet.has(normalizedOrigin)) {
+    res.setHeader("Access-Control-Allow-Origin", normalizedOrigin);
   }
 
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");

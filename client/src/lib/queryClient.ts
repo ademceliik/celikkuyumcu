@@ -7,16 +7,27 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
-// API base URL - Environment variable'dan al
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+const RAW_API_BASE_URL = import.meta.env.VITE_API_URL || "";
+const API_BASE_URL = RAW_API_BASE_URL.replace(/\/$/, "");
+
+function buildUrl(url: string): string {
+  if (url.startsWith("http")) {
+    return url;
+  }
+  const suffix = url.startsWith("/") ? url : `/${url}`;
+  if (!API_BASE_URL) {
+    return suffix;
+  }
+  return `${API_BASE_URL}${suffix}`;
+}
 
 export async function apiRequest(
   method: string,
   url: string,
-  data?: unknown | undefined,
+  data?: unknown,
 ): Promise<Response> {
-  const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
-  
+  const fullUrl = buildUrl(url);
+
   const res = await fetch(fullUrl, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
@@ -28,13 +39,12 @@ export async function apiRequest(
   return res;
 }
 
-// TanStack Query v5 için basitleştirilmiş QueryClient
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 dakika
+      staleTime: 5 * 60 * 1000,
       retry: 1,
     },
     mutations: {
@@ -42,18 +52,3 @@ export const queryClient = new QueryClient({
     },
   },
 });
-
-/* export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      queryFn: getQueryFn({ on401: "throw" }),
-      refetchInterval: false,
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
-      retry: false,
-    },
-    mutations: {
-      retry: false,
-    },
-  },
-}); */
