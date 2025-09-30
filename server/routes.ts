@@ -1,5 +1,5 @@
 import { createServer } from "http";
-import type { Express } from "express";
+import type { Express, Response } from "express";
 import { firebaseStorage as storage } from "./firebase-storage";
 import {
   insertContactInfoSchema,
@@ -11,15 +11,15 @@ import { z } from "zod";
 
 const GENERIC_ERROR = { message: "Sunucu hatasi" };
 
-function handleServerError(res: any, error?: unknown, logKey?: string) {
+function handleServerError(res: Response, error?: unknown, logKey?: string) {
   if (logKey) {
-    console.error(${logKey}:, error);
+    console.error(`${logKey}:`, error);
   }
   res.status(500).json(GENERIC_ERROR);
 }
 
 export async function registerRoutes(app: Express): Promise<ReturnType<typeof createServer>> {
-  app.get("/api/homepage-info", async (_req: any, res: any) => {
+  app.get("/api/homepage-info", async (_req, res) => {
     try {
       const info = await storage.getHomepageInfo();
       res.json(info ?? null);
@@ -28,7 +28,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.put("/api/homepage-info", async (req: any, res: any) => {
+  app.put("/api/homepage-info", async (req, res) => {
     try {
       const info = await storage.updateHomepageInfo(req.body ?? {});
       res.json(info);
@@ -37,7 +37,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.get("/api/about-info", async (_req: any, res: any) => {
+  app.get("/api/about-info", async (_req, res) => {
     try {
       const info = await storage.getAboutInfo();
       res.json(info ?? null);
@@ -46,7 +46,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.put("/api/about-info", async (req: any, res: any) => {
+  app.put("/api/about-info", async (req, res) => {
     try {
       const info = await storage.updateAboutInfo(req.body ?? {});
       res.json(info);
@@ -55,7 +55,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.patch("/api/messages/:id", async (req: any, res: any) => {
+  app.patch("/api/messages/:id", async (req, res) => {
     try {
       const { id } = req.params;
       const { isRead } = req.body ?? {};
@@ -72,7 +72,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.delete("/api/messages/:id", async (req: any, res: any) => {
+  app.delete("/api/messages/:id", async (req, res) => {
     try {
       const { id } = req.params;
       const deleted = await storage.deleteMessage(id);
@@ -85,7 +85,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.post("/api/messages", async (req: any, res: any) => {
+  app.post("/api/messages", async (req, res) => {
     try {
       const validated = insertMessageSchema.parse(req.body ?? {});
       const created = await storage.createMessage(validated);
@@ -98,7 +98,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.get("/api/messages", async (_req: any, res: any) => {
+  app.get("/api/messages", async (_req, res) => {
     try {
       const messages = await storage.getMessages();
       res.json(messages);
@@ -107,7 +107,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.post("/api/admin/login", async (req: any, res: any) => {
+  app.post("/api/admin/login", async (req, res) => {
     try {
       const { username, password } = req.body ?? {};
       if (!username || !password) {
@@ -133,9 +133,9 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.post("/api/admin/logout", async (req: any, res: any) => {
+  app.post("/api/admin/logout", async (req, res) => {
     try {
-      req.session.destroy((destroyErr: any) => {
+      req.session.destroy((destroyErr) => {
         if (destroyErr) {
           return res.status(500).json({ message: "Cikis yapilamadi" });
         }
@@ -146,7 +146,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.get("/api/admin/me", async (req: any, res: any) => {
+  app.get("/api/admin/me", async (req, res) => {
     try {
       if (req.session.userId && req.session.username) {
         const user = await storage.getUserByUsername(req.session.username);
@@ -167,7 +167,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.get("/api/products", async (_req: any, res: any) => {
+  app.get("/api/products", async (_req, res) => {
     try {
       const products = await storage.getProducts();
       res.json(products);
@@ -176,7 +176,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.get("/api/products/category/:category", async (req: any, res: any) => {
+  app.get("/api/products/category/:category", async (req, res) => {
     try {
       const { category } = req.params;
       const products = await storage.getProductsByCategory(category);
@@ -186,7 +186,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.get("/api/products/:id", async (req: any, res: any) => {
+  app.get("/api/products/:id", async (req, res) => {
     try {
       const { id } = req.params;
       const product = await storage.getProduct(id);
@@ -199,7 +199,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.post("/api/products", async (req: any, res: any) => {
+  app.post("/api/products", async (req, res) => {
     try {
       const validated = insertProductSchema.parse(req.body ?? {});
       const created = await storage.createProduct(validated);
@@ -212,7 +212,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.patch("/api/products/:id", async (req: any, res: any) => {
+  app.patch("/api/products/:id", async (req, res) => {
     try {
       const { id } = req.params;
       const validated = insertProductSchema.partial().parse(req.body ?? {});
@@ -229,7 +229,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.delete("/api/products/:id", async (req: any, res: any) => {
+  app.delete("/api/products/:id", async (req, res) => {
     try {
       const { id } = req.params;
       const deleted = await storage.deleteProduct(id);
@@ -242,7 +242,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.get("/api/contact-info", async (_req: any, res: any) => {
+  app.get("/api/contact-info", async (_req, res) => {
     try {
       const info = await storage.getContactInfo();
       res.json(info ?? null);
@@ -251,7 +251,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.put("/api/contact-info", async (req: any, res: any) => {
+  app.put("/api/contact-info", async (req, res) => {
     try {
       const validated = insertContactInfoSchema.partial().parse(req.body ?? {});
       if (Object.keys(validated).length === 0) {
@@ -267,7 +267,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.get("/api/exchange-rates", async (_req: any, res: any) => {
+  app.get("/api/exchange-rates", async (_req, res) => {
     try {
       const rates = await storage.getExchangeRates();
       res.json(rates);
@@ -276,7 +276,7 @@ export async function registerRoutes(app: Express): Promise<ReturnType<typeof cr
     }
   });
 
-  app.put("/api/exchange-rates", async (req: any, res: any) => {
+  app.put("/api/exchange-rates", async (req, res) => {
     try {
       const validated = insertExchangeRateSchema.partial().parse(req.body ?? {});
       if (!validated.currency || !validated.rate) {

@@ -1,6 +1,4 @@
-
 import type { Config } from "tailwindcss";
-import animate from "tw-animate-css";
 import typography from "@tailwindcss/typography";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -80,8 +78,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [animate, typography],
+  plugins: [typography],
 };
 
 export default config;
-
