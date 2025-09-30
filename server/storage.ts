@@ -1,36 +1,36 @@
-  updateMessageReadStatus(id: string, isRead: string): Promise<Message | undefined>;
-  deleteMessage(id: string): Promise<boolean>;
-  async updateMessageReadStatus(id: string, isRead: string): Promise<Message | undefined> {
-    const msg = this.messages.get(id);
-    if (!msg) return undefined;
-    msg.isRead = isRead;
-    this.messages.set(id, msg);
-    return msg;
-  }
-
-  async deleteMessage(id: string): Promise<boolean> {
-    return this.messages.delete(id);
-  }
-import { type User, type InsertUser, type Product, type InsertProduct, type ContactInfo, type ExchangeRate, type Message, type InsertMessage, type HomepageInfo, type InsertHomepageInfo, type AboutInfo, type InsertAboutInfo } from "@shared/schema";
 import { randomUUID } from "crypto";
+import {
+  type AboutInfo,
+  type ContactInfo,
+  type ExchangeRate,
+  type HomepageInfo,
+  type InsertAboutInfo,
+  type InsertContactInfo,
+  type InsertHomepageInfo,
+  type InsertMessage,
+  type InsertProduct,
+  type InsertUser,
+  type Message,
+  type Product,
+  type User,
+} from "@shared/schema";
 
 export interface IStorage {
-  // Homepage Info
   getHomepageInfo(): Promise<HomepageInfo | undefined>;
   updateHomepageInfo(data: Partial<InsertHomepageInfo>): Promise<HomepageInfo>;
 
-  // About Info
   getAboutInfo(): Promise<AboutInfo | undefined>;
   updateAboutInfo(data: Partial<InsertAboutInfo>): Promise<AboutInfo>;
-  // Messages
+
   createMessage(message: InsertMessage): Promise<Message>;
   getMessages(): Promise<Message[]>;
   updateMessageReadStatus(id: string, isRead: string): Promise<Message | undefined>;
   deleteMessage(id: string): Promise<boolean>;
+
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
+
   getProducts(): Promise<Product[]>;
   getProduct(id: string): Promise<Product | undefined>;
   getProductsByCategory(category: string): Promise<Product[]>;
@@ -38,11 +38,9 @@ export interface IStorage {
   updateProduct(id: string, product: Partial<InsertProduct>): Promise<Product | undefined>;
   deleteProduct(id: string): Promise<boolean>;
 
-  // Contact Info
   getContactInfo(): Promise<ContactInfo | undefined>;
-  updateContactInfo(phone: string): Promise<ContactInfo>;
+  updateContactInfo(data: Partial<InsertContactInfo>): Promise<ContactInfo>;
 
-  // Exchange Rate
   getExchangeRates(): Promise<ExchangeRate[]>;
   updateExchangeRate(currency: string, rate: string): Promise<ExchangeRate>;
 }
@@ -50,157 +48,102 @@ export interface IStorage {
 export class MemStorage implements IStorage {
   private homepageInfo: HomepageInfo | undefined;
   private aboutInfo: AboutInfo | undefined;
-  private messages: Map<string, Message> = new Map();
-  async updateMessageReadStatus(id: string, isRead: string): Promise<Message | undefined> {
-    const msg = this.messages.get(id);
-    if (!msg) return undefined;
-    msg.isRead = isRead;
-    this.messages.set(id, msg);
-    return msg;
-  }
-
-  async deleteMessage(id: string): Promise<boolean> {
-    return this.messages.delete(id);
-  }
-  async createMessage(insertMessage: InsertMessage): Promise<Message> {
-    const id = randomUUID();
-    const createdAt = new Date().toISOString();
-    const message: Message = { ...insertMessage, id, createdAt };
-    this.messages.set(id, message);
-    return message;
-  }
-
-  async getMessages(): Promise<Message[]> {
-    // Yeni gelen en üstte olacak şekilde sırala
-    return Array.from(this.messages.values()).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  }
-  private users: Map<string, User>;
-  private products: Map<string, Product>;
-
+  private messages = new Map<string, Message>();
+  private users = new Map<string, User>();
+  private products = new Map<string, Product>();
   private contactInfo: ContactInfo | undefined;
-  private exchangeRates: Map<string, ExchangeRate>;
+  private exchangeRates = new Map<string, ExchangeRate>();
 
   constructor() {
-    this.users = new Map();
-    this.products = new Map();
-    this.exchangeRates = new Map();
-    // Varsayılan iletişim ve kur bilgisi
-    this.contactInfo = { id: randomUUID(), phone: "+90 555 555 55 55" };
+    this.contactInfo = {
+      id: randomUUID(),
+      address: "Adres belirtilmedi",
+      phone: "+90 555 555 55 55",
+      workingHours: "09:00 - 18:00",
+    };
     this.homepageInfo = {
       id: randomUUID(),
-      title: "Altının Büyüsünü Keşfedin",
-      description: "Çelik Kuyumcu ile en kaliteli altın ve mücevherat ürünlerini keşfedin.",
-      imageUrl: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+      title: "Celik Kuyumcu",
+      description: "Modern kuyumcu deneyimi",
+      imageUrl: "https://images.unsplash.com/photo-1605100804763-247f67b3557e",
     };
     this.aboutInfo = {
       id: randomUUID(),
-      title: "Hakkımızda",
-      description: "1998 yılından bu yana altın ve mücevherat sektöründe hizmet veren Çelik Kuyumcu, müşteri memnuniyetini en üst seviyede tutmaya odaklanıyor.",
-      experienceYears: 25,
-      customerCount: 1000,
-      imageUrl: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+      title: "Hakkimizda",
+      description: "Deneyimli kuyumculuk ekibi",
+      experienceYears: 20,
+      customerCount: 500,
+      imageUrl: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f",
     };
-  // Homepage Info
+  }
+
   async getHomepageInfo(): Promise<HomepageInfo | undefined> {
     return this.homepageInfo;
   }
+
   async updateHomepageInfo(data: Partial<InsertHomepageInfo>): Promise<HomepageInfo> {
     if (!this.homepageInfo) {
-      this.homepageInfo = { id: randomUUID(), ...data } as HomepageInfo;
+      this.homepageInfo = {
+        id: randomUUID(),
+        title: data.title ?? "",
+        description: data.description ?? "",
+        imageUrl: data.imageUrl ?? "",
+      };
     } else {
       this.homepageInfo = { ...this.homepageInfo, ...data };
     }
     return this.homepageInfo;
   }
 
-  // About Info
   async getAboutInfo(): Promise<AboutInfo | undefined> {
     return this.aboutInfo;
   }
+
   async updateAboutInfo(data: Partial<InsertAboutInfo>): Promise<AboutInfo> {
     if (!this.aboutInfo) {
-      this.aboutInfo = { id: randomUUID(), ...data } as AboutInfo;
+      this.aboutInfo = {
+        id: randomUUID(),
+        title: data.title ?? "",
+        description: data.description ?? "",
+        experienceYears: data.experienceYears ?? 0,
+        customerCount: data.customerCount ?? 0,
+        imageUrl: data.imageUrl ?? "",
+      };
     } else {
-      this.aboutInfo = { ...this.aboutInfo, ...data };
+      this.aboutInfo = { ...this.aboutInfo, ...data } as AboutInfo;
     }
     return this.aboutInfo;
   }
-    this.initializeProducts();
-    this.initializeExchangeRates();
+
+  async createMessage(message: InsertMessage): Promise<Message> {
+    const id = randomUUID();
+    const createdAt = new Date().toISOString();
+    const newMessage: Message = {
+      id,
+      name: message.name,
+      phone: message.phone,
+      message: message.message,
+      createdAt,
+      isRead: "false",
+    };
+    this.messages.set(id, newMessage);
+    return newMessage;
   }
 
-  private async initializeExchangeRates() {
-    const rates: [string, string][] = [
-      ["USD", "28.50"],
-      ["EUR", "31.00"],
-      ["GRAM ALTIN", "1700.00"]
-    ];
-    for (const [currency, rate] of rates) {
-      await this.updateExchangeRate(currency, rate);
-    }
+  async getMessages(): Promise<Message[]> {
+    return Array.from(this.messages.values()).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
 
-  private async initializeProducts() {
-    const sampleProducts: InsertProduct[] = [
-      {
-        name: "Pırlanta Yüzük",
-        category: "yuzuk",
-        weight: "8.50",
-        goldKarat: 18,
-        imageUrl: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-        isActive: "true",
-        hasWorkmanship: "true"
-      },
-      {
-        name: "İnci Kolye",
-        category: "kolye",
-        weight: "12.30",
-        goldKarat: 14,
-        imageUrl: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-        isActive: "true",
-        hasWorkmanship: "true"
-      },
-      {
-        name: "Zincir Bilezik",
-        category: "bilezik",
-        weight: "6.70",
-        goldKarat: 22,
-        imageUrl: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-        isActive: "true",
-        hasWorkmanship: "true"
-      },
-      {
-        name: "Halka Küpe",
-        category: "kupe",
-        weight: "3.80",
-        goldKarat: 22,
-        imageUrl: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-        isActive: "true",
-        hasWorkmanship: "true"
-      },
-      {
-        name: "Kristal Bileklik",
-        category: "bileklik",
-        weight: "9.40",
-        goldKarat: 18,
-        imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-        isActive: "true",
-        hasWorkmanship: "true"
-      },
-      {
-        name: "Elegance Gerdanlık",
-        category: "gerdanlik",
-        weight: "15.20",
-        goldKarat: 14,
-        imageUrl: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-        isActive: "true",
-        hasWorkmanship: "true"
-      }
-    ];
+  async updateMessageReadStatus(id: string, isRead: string): Promise<Message | undefined> {
+    const current = this.messages.get(id);
+    if (!current) return undefined;
+    const updated = { ...current, isRead };
+    this.messages.set(id, updated);
+    return updated;
+  }
 
-    for (const product of sampleProducts) {
-      await this.createProduct(product);
-    }
+  async deleteMessage(id: string): Promise<boolean> {
+    return this.messages.delete(id);
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -208,20 +151,23 @@ export class MemStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    return Array.from(this.users.values()).find((user) => user.username === username);
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async createUser(user: InsertUser): Promise<User> {
     const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+    const record: User = {
+      id,
+      username: user.username,
+      password: user.password,
+      role: user.role ?? "admin",
+    };
+    this.users.set(id, record);
+    return record;
   }
 
   async getProducts(): Promise<Product[]> {
-    return Array.from(this.products.values()).filter(p => p.isActive === "true");
+    return Array.from(this.products.values()).filter((product) => product.isActive !== "false");
   }
 
   async getProduct(id: string): Promise<Product | undefined> {
@@ -230,61 +176,74 @@ export class MemStorage implements IStorage {
 
   async getProductsByCategory(category: string): Promise<Product[]> {
     return Array.from(this.products.values()).filter(
-      p => p.category === category && p.isActive === "true"
+      (product) => product.category === category && product.isActive !== "false",
     );
   }
 
-  async createProduct(insertProduct: InsertProduct): Promise<Product> {
+  async createProduct(product: InsertProduct): Promise<Product> {
     const id = randomUUID();
-    const product: Product = { 
-      ...insertProduct, 
+    const record: Product = {
       id,
-      isActive: insertProduct.isActive || "true",
-      hasWorkmanship: insertProduct.hasWorkmanship || "true"
+      name: product.name,
+      category: product.category,
+      weight: product.weight,
+      goldKarat: product.goldKarat,
+      imageUrl: product.imageUrl,
+      isActive: product.isActive ?? "true",
+      hasWorkmanship: product.hasWorkmanship ?? "true",
     };
-    this.products.set(id, product);
-    return product;
+    this.products.set(id, record);
+    return record;
   }
 
-  async updateProduct(id: string, productUpdate: Partial<InsertProduct>): Promise<Product | undefined> {
-    const existingProduct = this.products.get(id);
-    if (!existingProduct) return undefined;
-    
-    const updatedProduct: Product = { ...existingProduct, ...productUpdate };
-    this.products.set(id, updatedProduct);
-    return updatedProduct;
+  async updateProduct(id: string, product: Partial<InsertProduct>): Promise<Product | undefined> {
+    const current = this.products.get(id);
+    if (!current) return undefined;
+    const updated: Product = {
+      ...current,
+      ...product,
+      isActive: product.isActive ?? current.isActive,
+      hasWorkmanship: product.hasWorkmanship ?? current.hasWorkmanship,
+    } as Product;
+    this.products.set(id, updated);
+    return updated;
   }
 
   async deleteProduct(id: string): Promise<boolean> {
     return this.products.delete(id);
   }
 
-  // Contact Info
   async getContactInfo(): Promise<ContactInfo | undefined> {
     return this.contactInfo;
   }
-  async updateContactInfo(phone: string): Promise<ContactInfo> {
-    if (!this.contactInfo) {
-      this.contactInfo = { id: randomUUID(), phone };
-    } else {
-      this.contactInfo.phone = phone;
-    }
+
+  async updateContactInfo(data: Partial<InsertContactInfo>): Promise<ContactInfo> {
+    const base: ContactInfo = this.contactInfo ?? {
+      id: randomUUID(),
+      address: "",
+      phone: "",
+      workingHours: "",
+    };
+    this.contactInfo = {
+      ...base,
+      ...data,
+    } as ContactInfo;
     return this.contactInfo;
   }
 
-  // Exchange Rate
   async getExchangeRates(): Promise<ExchangeRate[]> {
     return Array.from(this.exchangeRates.values());
   }
+
   async updateExchangeRate(currency: string, rate: string): Promise<ExchangeRate> {
-    let ex = Array.from(this.exchangeRates.values()).find(e => e.currency === currency);
-    if (!ex) {
-      ex = { id: randomUUID(), currency, rate };
-    } else {
-      ex.rate = rate;
-    }
-    this.exchangeRates.set(currency, ex);
-    return ex;
+    const existing = this.exchangeRates.get(currency);
+    const record: ExchangeRate = {
+      id: existing?.id ?? randomUUID(),
+      currency,
+      rate,
+    };
+    this.exchangeRates.set(currency, record);
+    return record;
   }
 }
 

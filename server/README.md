@@ -1,57 +1,52 @@
-# Çelik Kuyumcu Backend
+# Celik Kuyumcu Backend
 
-Bu proje Çelik Kuyumcu web sitesinin backend API'sidir.
+Express tabanli API, Firestore ile veri yonetimi saglar.
 
 ## Kurulum
 
-1. Bağımlılıkları yükleyin:
-```bash
+`
 npm install
-```
-
-2. Environment variables'ları ayarlayın:
-```bash
 cp env.example .env
-```
+`
 
-3. Veritabanını ayarlayın:
-```bash
-npm run db:push
-```
+.env dosyasinda asagidaki degiskenleri doldurun:
+- FIREBASE_PROJECT_ID
+- FIREBASE_CLIENT_EMAIL
+- FIREBASE_PRIVATE_KEY (satir sonlarini \n olarak yazin) veya FIREBASE_SERVICE_ACCOUNT_JSON
+- FRONTEND_URL
+- SESSION_SECRET
 
-## Geliştirme
+## Gelistirme
 
-```bash
+`
 npm run dev
-```
+`
 
-## Production Build
+## Production
 
-```bash
+`
 npm run build
 npm start
-```
+`
 
-## Environment Variables
+## Baslica API Uclari
 
-- `PORT`: Server portu (varsayılan: 5000)
-- `NODE_ENV`: Environment (development/production)
-- `DATABASE_URL`: PostgreSQL veritabanı URL'i
-- `FRONTEND_URL`: Frontend URL'i (CORS için)
+- GET /api/products
+- POST /api/products
+- PATCH /api/products/:id
+- DELETE /api/products/:id
+- GET /api/contact-info
+- PUT /api/contact-info
+- GET /api/about-info
+- PUT /api/about-info
+- GET /api/homepage-info
+- PUT /api/homepage-info
+- GET /api/messages
+- POST /api/messages
+- PATCH /api/messages/:id
+- DELETE /api/messages/:id
+- POST /api/admin/login
+- POST /api/admin/logout
+- GET /api/admin/me
 
-## API Endpoints
-
-- `GET /api/products` - Ürünleri listele
-- `POST /api/products` - Yeni ürün ekle
-- `PUT /api/products/:id` - Ürün güncelle
-- `DELETE /api/products/:id` - Ürün sil
-- `GET /api/contact-info` - İletişim bilgileri
-- `PUT /api/contact-info` - İletişim bilgilerini güncelle
-- `GET /api/about-info` - Hakkımızda bilgileri
-- `PUT /api/about-info` - Hakkımızda bilgilerini güncelle
-- `GET /api/homepage-info` - Anasayfa bilgileri
-- `PUT /api/homepage-info` - Anasayfa bilgilerini güncelle
-- `GET /api/messages` - Mesajları listele
-- `POST /api/messages` - Yeni mesaj gönder
-- `PATCH /api/messages/:id` - Mesajı okundu olarak işaretle
-- `DELETE /api/messages/:id` - Mesaj sil
+Admin oturumu icin acilis kullanicisi: dmin / dmin123. Gerekirse Firestore uzerinden sifreyi degistirebilirsiniz.

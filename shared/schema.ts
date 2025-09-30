@@ -1,107 +1,89 @@
-import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, decimal, integer } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Homepage Info Table
-export const homepageInfo = pgTable("homepage_info", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  imageUrl: text("image_url").notNull(),
+export const homepageInfoSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  imageUrl: z.string(),
 });
 
-export const insertHomepageInfoSchema = createInsertSchema(homepageInfo).omit({ id: true });
+export const insertHomepageInfoSchema = homepageInfoSchema.omit({ id: true });
 export type InsertHomepageInfo = z.infer<typeof insertHomepageInfoSchema>;
-export type HomepageInfo = typeof homepageInfo.$inferSelect;
+export type HomepageInfo = z.infer<typeof homepageInfoSchema>;
 
-// About Info Table
-export const aboutInfo = pgTable("about_info", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  experienceYears: integer("experience_years").notNull(),
-  customerCount: integer("customer_count").notNull(),
-  imageUrl: text("image_url").notNull(),
+export const aboutInfoSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  experienceYears: z.number(),
+  customerCount: z.number(),
+  imageUrl: z.string(),
 });
 
-export const insertAboutInfoSchema = createInsertSchema(aboutInfo).omit({ id: true });
+export const insertAboutInfoSchema = aboutInfoSchema.omit({ id: true });
 export type InsertAboutInfo = z.infer<typeof insertAboutInfoSchema>;
-export type AboutInfo = typeof aboutInfo.$inferSelect;
+export type AboutInfo = z.infer<typeof aboutInfoSchema>;
 
-export const products = pgTable("products", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  name: text("name").notNull(),
-  category: text("category").notNull(), // yuzuk, kupe, kolye, bileklik, bilezik, gerdanlik
-  weight: decimal("weight", { precision: 5, scale: 2 }).notNull(), // gram
-  goldKarat: integer("gold_karat").notNull(), // 14, 18, 22 ayar
-  imageUrl: text("image_url").notNull(),
-  isActive: text("is_active").notNull().default("true"),
-  hasWorkmanship: text("has_workmanship").notNull().default("true"), // işçilikli mi
+export const productSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  category: z.string(),
+  weight: z.string(),
+  goldKarat: z.number(),
+  imageUrl: z.string(),
+  isActive: z.string().default("true"),
+  hasWorkmanship: z.string().default("true"),
 });
 
-export const insertProductSchema = createInsertSchema(products).omit({
-  id: true,
-});
-
+export const insertProductSchema = productSchema.omit({ id: true });
 export type InsertProduct = z.infer<typeof insertProductSchema>;
-export type Product = typeof products.$inferSelect;
+export type Product = z.infer<typeof productSchema>;
 
-export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
-  role: text("role").notNull().default("admin"),
+export const userSchema = z.object({
+  id: z.string(),
+  username: z.string(),
+  password: z.string(),
+  role: z.string().default("admin"),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
-  role: true,
-});
-
+export const insertUserSchema = userSchema.omit({ id: true });
 export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+export type User = z.infer<typeof userSchema>;
 
-// Contact Info Table
-export const contactInfo = pgTable("contact_info", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  address: text("address").notNull(),
-  phone: text("phone").notNull(),
-  workingHours: text("working_hours").notNull(),
+export const contactInfoSchema = z.object({
+  id: z.string(),
+  address: z.string(),
+  phone: z.string(),
+  workingHours: z.string(),
 });
 
-export const insertContactInfoSchema = createInsertSchema(contactInfo).omit({ id: true });
+export const insertContactInfoSchema = contactInfoSchema.omit({ id: true });
 export type InsertContactInfo = z.infer<typeof insertContactInfoSchema>;
-export type ContactInfo = typeof contactInfo.$inferSelect;
+export type ContactInfo = z.infer<typeof contactInfoSchema>;
 
-// Exchange Rate Table
-export const exchangeRate = pgTable("exchange_rate", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  currency: text("currency").notNull(), // örn: USD, EUR, GRAM ALTIN
-  rate: decimal("rate", { precision: 10, scale: 4 }).notNull(),
+export const exchangeRateSchema = z.object({
+  id: z.string(),
+  currency: z.string(),
+  rate: z.string(),
 });
 
-export const insertExchangeRateSchema = createInsertSchema(exchangeRate).omit({
-  id: true,
-});
+export const insertExchangeRateSchema = exchangeRateSchema.omit({ id: true });
 export type InsertExchangeRate = z.infer<typeof insertExchangeRateSchema>;
+export type ExchangeRate = z.infer<typeof exchangeRateSchema>;
 
-// Messages Table (for contact form)
-export const messages = pgTable("messages", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  name: text("name").notNull(),
-  phone: text("phone").notNull(),
-  message: text("message").notNull(),
-  createdAt: text("created_at").notNull().default(sql`now()`),
-  isRead: text("is_read").notNull().default("false"), // okundu/okunmadı
+export const messageSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  phone: z.string(),
+  message: z.string(),
+  createdAt: z.string(),
+  isRead: z.string(),
 });
 
-export const insertMessageSchema = createInsertSchema(messages).omit({
+export const insertMessageSchema = messageSchema.omit({
   id: true,
   createdAt: true,
   isRead: true,
 });
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
-export type Message = typeof messages.$inferSelect;
-export type ExchangeRate = typeof exchangeRate.$inferSelect;
+export type Message = z.infer<typeof messageSchema>;
