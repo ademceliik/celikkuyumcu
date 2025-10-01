@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MessageCircle, CheckCircle, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function MessageAdmin() {
   const { data: messages = [], isLoading } = useQuery<any[]>({
@@ -11,19 +12,13 @@ export default function MessageAdmin() {
   const queryClient = useQueryClient();
   const markReadMutation = useMutation({
     mutationFn: async (id: string) => {
-      await fetch((import.meta.env.VITE_API_URL || "") + `/messages/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isRead: "true" }),
-      });
+      await apiRequest("PATCH", `/api/messages/${id}`, { isRead: "true" });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/messages"] }),
   });
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await fetch((import.meta.env.VITE_API_URL || "") + `/messages/${id}`, {
-        method: "DELETE",
-      });
+      await apiRequest("DELETE", `/api/messages/${id}`);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/messages"] }),
   });
@@ -38,9 +33,9 @@ export default function MessageAdmin() {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div>Yükleniyor...</div>
+          <div>Yukleniyor...</div>
         ) : messages.length === 0 ? (
-          <div className="text-muted-foreground">Henüz mesaj yok.</div>
+          <div className="text-muted-foreground">Henuz mesaj yok.</div>
         ) : (
           <div className="space-y-4">
             {messages.map((msg) => (
@@ -49,7 +44,7 @@ export default function MessageAdmin() {
                   <div className="flex items-center gap-2">
                     <div className="font-semibold text-lg">{msg.name}</div>
                     {msg.isRead === "false" ? (
-                      <Badge variant="destructive">Okunmadı</Badge>
+                      <Badge variant="destructive">Okunmadi</Badge>
                     ) : (
                       <Badge variant="secondary">Okundu</Badge>
                     )}
@@ -63,7 +58,7 @@ export default function MessageAdmin() {
                   </div>
                   <div className="flex gap-2">
                     {msg.isRead === "false" && (
-                      <Button size="sm" variant="outline" onClick={() => markReadMutation.mutate(msg.id)} title="Okundu olarak işaretle">
+                      <Button size="sm" variant="outline" onClick={() => markReadMutation.mutate(msg.id)} title="Okundu olarak isaretle">
                         <CheckCircle className="w-4 h-4 mr-1" /> Okundu
                       </Button>
                     )}

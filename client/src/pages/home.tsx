@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ProductCard from "@/components/product-card";
 import { type Product } from "@shared/schema";
 import { WHATSAPP_PHONE } from "@/lib/constants";
+import { apiRequest } from "@/lib/queryClient";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function Home() {
@@ -15,7 +16,7 @@ export default function Home() {
   const { data: homepageInfo } = useQuery({
     queryKey: ["/api/homepage-info"],
     queryFn: async () => {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/homepage-info`);
+      const res = await apiRequest("GET", "/api/homepage-info");
       return res.json();
     },
   });

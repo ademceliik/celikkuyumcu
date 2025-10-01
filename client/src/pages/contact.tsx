@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { WHATSAPP_PHONE } from "@/lib/constants";
+import { apiRequest } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
@@ -20,7 +21,7 @@ export default function Contact() {
   const { data: contactInfo } = useQuery({
     queryKey: ["/api/contact-info"],
     queryFn: async () => {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/contact-info`);
+      const res = await apiRequest("GET", "/api/contact-info");
       return res.json();
     },
   });

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { apiRequest } from "@/lib/queryClient";
 
 const AdminLogin: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
   const [username, setUsername] = useState("");
@@ -9,42 +10,39 @@ const AdminLogin: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
     e.preventDefault();
     setError("");
     try {
-      const res = await fetch((import.meta.env.VITE_API_URL || "") + "/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ username, password })
-      });
-      if (res.ok) {
-        onLogin();
+      await apiRequest("POST", "/api/admin/login", { username, password });
+      onLogin();
+    } catch (err) {
+      if (err instanceof Error && (err.message.startsWith("400") || err.message.startsWith("401"))) {
+        setError("Kullanici adi veya sifre hatali");
       } else {
-        setError("Kullanıcı adı veya şifre hatalı");
+        setError("Sunucuya baglanilamadi");
       }
-    } catch {
-      setError("Sunucuya bağlanılamadı");
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm flex flex-col gap-4">
-        <h2 className="text-xl font-bold text-center">Admin Girişi</h2>
+        <h2 className="text-xl font-bold text-center">Admin Girisi</h2>
         <input
           type="text"
-          placeholder="Kullanıcı Adı"
+          placeholder="Kullanici Adi"
           className="border rounded px-3 py-2"
           value={username}
-          onChange={e => setUsername(e.target.value)}
+          onChange={(e) => setUsername(e.target.value)}
         />
         <input
           type="password"
-          placeholder="Şifre"
+          placeholder="Sifre"
           className="border rounded px-3 py-2"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
         {error && <div className="text-red-600 text-sm text-center">{error}</div>}
-        <button type="submit" className="bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">Giriş Yap</button>
+        <button type="submit" className="bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">
+          Giris Yap
+        </button>
       </form>
     </div>
   );

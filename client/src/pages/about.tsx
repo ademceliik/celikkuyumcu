@@ -1,4 +1,5 @@
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { apiRequest } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 
 export default function About() {
@@ -6,7 +7,7 @@ export default function About() {
   const { data: aboutInfo } = useQuery({
     queryKey: ["/api/about-info"],
     queryFn: async () => {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/about-info`);
+      const res = await apiRequest("GET", "/api/about-info");
       return res.json();
     },
   });
