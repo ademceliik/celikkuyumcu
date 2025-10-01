@@ -1,81 +1,100 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { apiRequest } from "@/lib/queryClient";
+import type { ContactInfo } from "@shared/schema";
 
+const initialState = {
+  address: "",
+  phone: "",
+  workingHours: "",
+};
 
 const ContactAdmin: React.FC = () => {
-  const [form, setForm] = useState({
-    address: "",
-    phone: "",
-    workingHours: ""
+  const queryClient = useQueryClient();
+  const { data, isLoading } = useQuery<ContactInfo | null>({
+    queryKey: ["/api/contact-info"],
   });
-  const [loading, setLoading] = useState(true);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetch("/api/contact-info")
-      .then(res => res.json())
-      .then(data => setForm({
-        address: data?.address || "",
-        phone: data?.phone || "",
-        workingHours: data?.workingHours || ""
-      }))
-      .catch(() => setError("Bilgi alınamadı"))
-      .finally(() => setLoading(false));
-  }, []);
+  const [form, setForm] = React.useState(initialState);
+  const [feedback, setFeedback] = React.useState("");
+  const [error, setError] = React.useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
-  };
+  React.useEffect(() => {
+    if (data) {
+      setForm({
+        address: data.address ?? "",
+        phone: data.phone ?? "",
+        workingHours: data.workingHours ?? "",
+      });
+    }
+  }, [data]);
 
-  const handleSave = (e: React.FormEvent) => {
+  const updateMutation = useMutation({
+    mutationFn: async (values: typeof form) => {
+      const payload: Record<string, unknown> = {};
+      if (values.address.trim()) payload.address = values.address.trim();
+      if (values.phone.trim()) payload.phone = values.phone.trim();
+      if (values.workingHours.trim()) payload.workingHours = values.workingHours.trim();
+      const res = await apiRequest("PUT", "/api/contact-info", payload);
+      return res.json();
+    },
+    onSuccess: () => {
+      setFeedback("Kaydedildi");
+      setError("");
+      queryClient.invalidateQueries({ queryKey: ["/api/contact-info"] });
+    },
+    onError: () => {
+      setError("Kaydedilemedi");
+      setFeedback("");
+    },
+  });
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSuccess(false);
+    setFeedback("");
     setError("");
-    fetch("/api/contact-info", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form)
-    })
-      .then(res => {
-        if (!res.ok) throw new Error();
-        setSuccess(true);
-      })
-      .catch(() => setError("Kaydedilemedi"));
-  };
+    updateMutation.mutate(form);
+  }
 
   return (
     <div className="mt-8">
-      <h2 className="text-lg font-bold mb-4">İletişim Bilgileri</h2>
-      {loading ? (
-        <div>Yükleniyor...</div>
+      <h2 className="text-lg font-bold mb-4">Iletisim Bilgileri</h2>
+      {isLoading ? (
+        <div>Yukleniyor...</div>
       ) : (
-        <form onSubmit={handleSave} className="flex flex-col gap-3 max-w-md">
-          <input
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-md">
+          <Input
             type="text"
             name="address"
             value={form.address}
             onChange={handleChange}
-            className="border px-3 py-2 rounded"
             placeholder="Adres"
           />
-          <input
+          <Input
             type="text"
             name="phone"
             value={form.phone}
             onChange={handleChange}
-            className="border px-3 py-2 rounded"
-            placeholder="Telefon Numarası"
+            placeholder="Telefon Numarasi"
           />
-          <input
+          <Input
             type="text"
             name="workingHours"
             value={form.workingHours}
             onChange={handleChange}
-            className="border px-3 py-2 rounded"
-            placeholder="Çalışma Saatleri"
+            placeholder="Calisma Saatleri"
           />
-          <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Kaydet</button>
-          {success && <span className="text-green-600 ml-2">Kaydedildi</span>}
+          <Button type="submit" disabled={updateMutation.isLoading}>
+            Kaydet
+          </Button>
+          {feedback && <span className="text-green-600 ml-2">{feedback}</span>}
           {error && <span className="text-red-600 ml-2">{error}</span>}
         </form>
       )}

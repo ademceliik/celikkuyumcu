@@ -2,70 +2,108 @@ import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { apiRequest } from "@/lib/queryClient";
+import type { AboutInfo } from "@shared/schema";
+
+const initialState = {
+  title: "",
+  description: "",
+  experienceYears: "",
+  customerCount: "",
+  imageUrl: "",
+};
 
 export default function AboutAdmin() {
   const queryClient = useQueryClient();
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<AboutInfo | null>({
     queryKey: ["/api/about-info"],
-    queryFn: async () => {
-      const res = await fetch("/api/about-info");
-      return res.json();
-    },
-  });
-  const mutation = useMutation({
-    mutationFn: async (values: any) => {
-      const res = await fetch("/api/about-info", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-      return res.json();
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/about-info"] }),
   });
 
-  const [form, setForm] = React.useState({
-    title: "",
-    description: "",
-    experienceYears: "",
-    customerCount: "",
-    imageUrl: ""
-  });
+  const [form, setForm] = React.useState(initialState);
+  const [feedback, setFeedback] = React.useState("");
+  const [error, setError] = React.useState("");
 
   React.useEffect(() => {
-    if (data) setForm({
-      title: data.title || "",
-      description: data.description || "",
-      experienceYears: data.experienceYears?.toString() || "",
-      customerCount: data.customerCount?.toString() || "",
-      imageUrl: data.imageUrl || ""
-    });
+    if (data) {
+      setForm({
+        title: data.title ?? "",
+        description: data.description ?? "",
+        experienceYears: data.experienceYears?.toString() ?? "",
+        customerCount: data.customerCount?.toString() ?? "",
+        imageUrl: data.imageUrl ?? "",
+      });
+    }
   }, [data]);
 
+  const mutation = useMutation({
+    mutationFn: async (values: typeof form) => {
+      const payload: Record<string, unknown> = {};
+      if (values.title.trim()) payload.title = values.title.trim();
+      if (values.description.trim()) payload.description = values.description.trim();
+      if (values.imageUrl.trim()) payload.imageUrl = values.imageUrl.trim();
+      if (values.experienceYears.trim()) payload.experienceYears = Number(values.experienceYears);
+      if (values.customerCount.trim()) payload.customerCount = Number(values.customerCount);
+      const res = await apiRequest("PUT", "/api/about-info", payload);
+      return res.json();
+    },
+    onSuccess: () => {
+      setFeedback("Kaydedildi");
+      setError("");
+      queryClient.invalidateQueries({ queryKey: ["/api/about-info"] });
+    },
+    onError: () => {
+      setError("Kaydedilemedi");
+      setFeedback("");
+    },
+  });
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    mutation.mutate({
-      ...form,
-      experienceYears: Number(form.experienceYears),
-      customerCount: Number(form.customerCount)
-    });
+    setFeedback("");
+    setError("");
+    mutation.mutate(form);
   }
 
   return (
     <div className="mb-8">
-      <h2 className="text-xl font-bold mb-2">Hakkımızda Bilgileri</h2>
-      {isLoading ? <div>Yükleniyor...</div> : (
+      <h2 className="text-xl font-bold mb-2">Hakkimizda Bilgileri</h2>
+      {isLoading ? (
+        <div>Yukleniyor...</div>
+      ) : (
         <form onSubmit={handleSubmit} className="space-y-3">
-          <Input name="title" value={form.title} onChange={handleChange} placeholder="Başlık" />
-          <textarea name="description" value={form.description} onChange={handleChange} placeholder="Açıklama" className="w-full border rounded p-2" />
-          <Input name="experienceYears" value={form.experienceYears} onChange={handleChange} placeholder="Deneyim Yılı" type="number" />
-          <Input name="customerCount" value={form.customerCount} onChange={handleChange} placeholder="Müşteri Sayısı" type="number" />
-          <Input name="imageUrl" value={form.imageUrl} onChange={handleChange} placeholder="Görsel URL" />
-          <Button type="submit" disabled={mutation.isLoading}>Kaydet</Button>
+          <Input name="title" value={form.title} onChange={handleChange} placeholder="Baslik" />
+          <textarea
+            name="description"
+            value={form.description}
+            onChange={handleChange}
+            placeholder="Aciklama"
+            className="w-full border rounded p-2"
+          />
+          <Input
+            name="experienceYears"
+            value={form.experienceYears}
+            onChange={handleChange}
+            placeholder="Deneyim Yili"
+            type="number"
+          />
+          <Input
+            name="customerCount"
+            value={form.customerCount}
+            onChange={handleChange}
+            placeholder="Musteri Sayisi"
+            type="number"
+          />
+          <Input name="imageUrl" value={form.imageUrl} onChange={handleChange} placeholder="Gorsel URL" />
+          <Button type="submit" disabled={mutation.isLoading}>
+            Kaydet
+          </Button>
+          {feedback && <span className="text-green-600 ml-2">{feedback}</span>}
+          {error && <span className="text-red-600 ml-2">{error}</span>}
         </form>
       )}
     </div>

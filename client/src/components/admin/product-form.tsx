@@ -197,7 +197,8 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
                 });
                 const data = await res.json();
                 if (data.file) {
-                  const url = `https://ucarecdn.com/${data.file}/`;
+                  const cdnBase = (import.meta.env.VITE_UPLOADCARE_LNK || "https://ucarecdn.com").replace(/\/$/, "");
+                  const url = `${cdnBase}/${data.file}/-/preview/1000x1000`;
                   field.onChange(url);
                 }
               } catch (err) {
