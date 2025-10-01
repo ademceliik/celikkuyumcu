@@ -13,7 +13,7 @@ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import type { ContactInfo } from "@shared/schema";
 
 export default function Contact() {
-  useDocumentTitle("Celik Kuyumcu | Iletisim");
+  useDocumentTitle("Çelik Kuyumcu | İletişim");
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
@@ -41,7 +41,7 @@ export default function Contact() {
     if (!formData.name || !formData.phone || !formData.message) {
       toast({
         title: "Hata",
-        description: "Lutfen tum alanlari doldurun.",
+        description: "Lütfen tüm alanları doldurun.",
         variant: "destructive",
       });
       return;
@@ -56,14 +56,14 @@ export default function Contact() {
       });
       queryClient.invalidateQueries({ queryKey: ["/api/messages"] });
       toast({
-        title: "Tesekkurler",
-        description: "Mesajiniz basariyla gonderildi.",
+        title: "Teşekkürler",
+        description: "Mesajınız başarıyla gönderildi.",
       });
       setFormData({ name: "", phone: "", message: "" });
     } catch (err) {
       toast({
         title: "Hata",
-        description: "Mesaj gonderilirken bir sorun olustu. Lutfen tekrar deneyin.",
+        description: "Mesaj gönderilirken bir sorun oluştu. Lütfen tekrar deneyin.",
         variant: "destructive",
       });
     } finally {
@@ -75,7 +75,7 @@ export default function Contact() {
     const phone = contactInfo?.phone || WHATSAPP_PHONE;
     if (phone) {
       window.open(
-        `https://wa.me/${phone.replace(/\D/g, "")}?text=Merhaba, urunleriniz hakkinda bilgi almak istiyorum.`,
+        `https://wa.me/${phone.replace(/\D/g, "")}?text=Merhaba, ürünleriniz hakkında bilgi almak istiyorum.`,
         "_blank",
       );
     }
@@ -109,8 +109,8 @@ export default function Contact() {
                       <div className="text-muted-foreground">{contactInfo?.address || "-"}</div>
                     </div>
                     <div className="mb-4">
-                      <div className="font-semibold">Calisma Saatleri:</div>
-                      <div className="text-muted-foreground">{contactInfo?.workingHours || "-"}</div>
+                      <div className="font-semibold">Çalışma Saatleri:</div>
+                      <div className="text-muted-foreground whitespace-pre-line">{contactInfo?.workingHours || "-"}</div>
                     </div>
                     <Button onClick={handleWhatsAppClick} className="bg-green-500 text-white hover:bg-green-600 mt-2">
                       WhatsApp'tan Yaz
@@ -136,7 +136,7 @@ export default function Contact() {
                     <Input id="phone" name="phone" value={formData.phone} onChange={handleInputChange} required />
                   </div>
                   <div>
-                    <Label htmlFor="message">Mesajiniz</Label>
+                    <Label htmlFor="message">Mesajınız</Label>
                     <Textarea id="message" name="message" value={formData.message} onChange={handleInputChange} required />
                   </div>
                   <Button type="submit" className="w-full" disabled={isSubmitting}>

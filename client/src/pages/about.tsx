@@ -11,7 +11,7 @@ const FALLBACK_ABOUT = {
 };
 
 export default function About() {
-  useDocumentTitle("Celik Kuyumcu | Hakkimizda");
+  useDocumentTitle("Çelik Kuyumcu | Hakkımızda");
   const { data: aboutInfo, isLoading } = useQuery<AboutInfo | null>({
     queryKey: ["/api/about-info"],
   });
@@ -43,17 +43,17 @@ export default function About() {
                 <h3 className="text-4xl font-serif font-bold text-foreground mb-6" data-testid="text-about-title">
                   {title}
                 </h3>
-                <p className="text-lg text-muted-foreground mb-6 leading-relaxed" data-testid="text-about-description-1">
+                <p className="text-lg text-muted-foreground mb-6 leading-relaxed whitespace-pre-line" data-testid="text-about-description-1">
                   {description}
                 </p>
                 <div className="grid grid-cols-2 gap-6" data-testid="stats-container">
                   <div className="text-center p-4 bg-background rounded-lg" data-testid="stat-experience">
                     <div className="text-2xl font-bold text-primary mb-2">{experienceYears}+</div>
-                    <div className="text-muted-foreground">Yil Deneyim</div>
+                    <div className="text-muted-foreground">Yıl Deneyim</div>
                   </div>
                   <div className="text-center p-4 bg-background rounded-lg" data-testid="stat-customers">
                     <div className="text-2xl font-bold text-primary mb-2">{customerCount}+</div>
-                    <div className="text-muted-foreground">Mutlu Musteri</div>
+                    <div className="text-muted-foreground">Mutlu Müşteri</div>
                   </div>
                 </div>
               </>
@@ -75,7 +75,7 @@ export default function About() {
 
         <div className="mt-20">
           <h4 className="text-3xl font-serif font-bold text-center text-foreground mb-12" data-testid="text-values-title">
-            Degerlerimiz
+            Değerlerimiz
           </h4>
           <div className="grid md:grid-cols-3 gap-8" data-testid="values-grid">
             <div className="text-center p-6 bg-background rounded-xl shadow-lg" data-testid="value-quality">
@@ -83,21 +83,21 @@ export default function About() {
                 <i className="fas fa-award text-primary text-2xl"></i>
               </div>
               <h5 className="text-xl font-semibold text-foreground mb-3">Kalite</h5>
-              <p className="text-muted-foreground">En yuksek kalitede altin ve madenleri sunuyoruz.</p>
+              <p className="text-muted-foreground">En yüksek kalitede altın ve madenleri sunuyoruz.</p>
             </div>
             <div className="text-center p-6 bg-background rounded-xl shadow-lg" data-testid="value-trust">
               <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i className="fas fa-handshake text-primary text-2xl"></i>
               </div>
-              <h5 className="text-xl font-semibold text-foreground mb-3">Guven</h5>
-              <p className="text-muted-foreground">Deneyimimizle musterilerimizin guvenini kazandik.</p>
+              <h5 className="text-xl font-semibold text-foreground mb-3">Güven</h5>
+              <p className="text-muted-foreground">Deneyimimizle müşterilerimizin güvenini kazandık.</p>
             </div>
             <div className="text-center p-6 bg-background rounded-xl shadow-lg" data-testid="value-service">
               <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i className="fas fa-heart text-primary text-2xl"></i>
               </div>
               <h5 className="text-xl font-semibold text-foreground mb-3">Hizmet</h5>
-              <p className="text-muted-foreground">Musteri memnuniyeti odakli hizmet anlayisina sahibiz.</p>
+              <p className="text-muted-foreground">Müşteri memnuniyeti odaklı hizmet anlayışına sahibiz.</p>
             </div>
           </div>
         </div>

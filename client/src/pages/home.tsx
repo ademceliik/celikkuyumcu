@@ -15,7 +15,7 @@ const FALLBACK_HOMEPAGE = {
 };
 
 export default function Home() {
-  useDocumentTitle("Celik Kuyumcu");
+  useDocumentTitle("Çelik Kuyumcu");
   const { data: products = [], isLoading: isProductsLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
@@ -61,7 +61,7 @@ export default function Home() {
                   <h2 className="text-5xl font-serif font-bold text-foreground mb-6" data-testid="text-hero-title">
                     {heroTitle}
                   </h2>
-                  <p className="text-xl text-muted-foreground mb-8 leading-relaxed" data-testid="text-hero-description">
+                  <p className="text-xl text-muted-foreground mb-8 leading-relaxed whitespace-pre-line" data-testid="text-hero-description">
                     {heroDescription}
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4">
@@ -70,7 +70,7 @@ export default function Home() {
                         className="gold-gradient text-primary-foreground px-8 py-4 rounded-lg font-semibold hover:shadow-lg transition-all"
                         data-testid="button-view-products"
                       >
-                        Urunleri Incele
+                        Ürünleri İncele
                       </Button>
                     </Link>
                     <Link href="/contact">
@@ -79,7 +79,7 @@ export default function Home() {
                         className="border border-border text-foreground px-8 py-4 rounded-lg font-semibold hover:bg-card transition-colors"
                         data-testid="button-contact"
                       >
-                        Iletisime Gec
+                        İletişime Geç
                       </Button>
                     </Link>
                   </div>
@@ -100,7 +100,7 @@ export default function Home() {
               {!isHomepageLoading && (
                 <div className="absolute -bottom-6 -right-6 bg-primary text-primary-foreground p-6 rounded-xl shadow-lg" data-testid="card-experience">
                   <div className="text-2xl font-bold">25+</div>
-                  <div className="text-sm">Yil Deneyim</div>
+                  <div className="text-sm">Yıl Deneyim</div>
                 </div>
               )}
             </div>
@@ -112,10 +112,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h3 className="text-4xl font-serif font-bold text-foreground mb-4" data-testid="text-featured-title">
-              One Cikan Urunler
+              Öne Çıkan Ürünler
             </h3>
             <p className="text-xl text-muted-foreground" data-testid="text-featured-subtitle">
-              En populer ve ozel tasarim takilarimiz
+              En popüler ve özel tasarım takılarımızı keşfedin
             </p>
           </div>
 
@@ -146,7 +146,7 @@ export default function Home() {
                 className="gold-gradient text-primary-foreground px-8 py-4 rounded-lg font-semibold hover:shadow-lg transition-all"
                 data-testid="button-view-all-products"
               >
-                Tum Urunleri Goruntule
+                Tüm Ürünleri Görüntüle
               </Button>
             </Link>
           </div>

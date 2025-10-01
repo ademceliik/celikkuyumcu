@@ -24,7 +24,7 @@ const AdminLogin: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm flex flex-col gap-4">
-        <h2 className="text-xl font-bold text-center">Admin Girisi</h2>
+        <h2 className="text-xl font-bold text-center">Admin Girişi</h2>
         <input
           type="text"
           placeholder="Kullanici Adi"
@@ -41,7 +41,7 @@ const AdminLogin: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
         />
         {error && <div className="text-red-600 text-sm text-center">{error}</div>}
         <button type="submit" className="bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">
-          Giris Yap
+          Giriş Yap
         </button>
       </form>
     </div>
